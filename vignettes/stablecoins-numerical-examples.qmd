@@ -1,0 +1,517 @@
+---
+title: "Stablecoins and the Monetary Order: Numerical Examples"
+subtitle: "Companion computations using the dgme package"
+author: "Martin Summer"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    number-sections: true
+  pdf:
+    toc: true
+    number-sections: true
+    keep-tex: true
+    documentclass: article
+    geometry:
+      - margin=2.5cm
+vignette: >
+  %\VignetteIndexEntry{Stablecoins and the Monetary Order: Numerical Examples}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dgme)
+```
+
+# Introduction
+
+This vignette serves two purposes.  First, it introduces the `dgme` package
+by walking through the full pipeline---from parameterisation to equilibrium
+computation to tables and visualisations.  Second, it reproduces the
+numerical examples that accompany the paper "Stablecoins and the Monetary
+Order: Inflationary Finance and Competing Settlement Assets."
+
+The package implements the Dubey--Geanakoplos (DG) model of a monetary
+economy for the case of two households and two goods with Cobb--Douglas
+preferences.  All computations below can be reproduced by installing the
+package and running this document.
+
+# The baseline economy {#sec-baseline}
+
+## Parameterisation
+
+The canonical example uses asymmetric endowments and preferences to create
+clear gains from trade under a moderate monetary friction.
+
+```{r}
+#| label: baseline-params
+par <- dgme_parametrize("paper_example_1")
+par
+```
+
+Household 1 is endowed with much of good 1 but prefers good 2
+($\alpha^1 = 0.22$); household 2 has the opposite pattern
+($\alpha^2 = 0.84$).  The bond price $q = 0.6$ implies an interest rate
+$r = (1-q)/q \approx 0.667$---substantial enough to make the monetary
+friction visible in the geometry of the budget set.
+
+## Solving for equilibrium
+
+```{r}
+#| label: baseline-solve
+res <- dgme_solve(par, variants = "baseline")
+bl  <- res$results$baseline
+```
+
+The solver finds the equilibrium price vector and verifies convergence:
+
+```{r}
+#| label: baseline-prices
+cat("Prices:           p = (", round(bl$p[1], 4), ",",
+    round(bl$p[2], 4), ")\n")
+cat("Relative price: p1/p2 =", round(bl$p[1] / bl$p[2], 4), "\n")
+cat("Converged:       ", bl$converged, "\n")
+```
+
+## Equilibrium allocation
+
+```{r}
+#| label: baseline-table
+dgme_table(res, "equilibrium", format = "markdown")
+```
+
+Both households trade: household 1 sells good 1 and buys good 2;
+household 2 does the opposite.  Both payment constraints bind exactly
+---any slack would mean the household could buy more, contradicting
+strict monotonicity.
+
+## Consistency checks
+
+The `dgme_check` function verifies all theoretical conditions:
+
+```{r}
+#| label: baseline-check
+chk <- dgme_check(bl)
+print(chk)
+```
+
+## Flow of funds
+
+The aggregate flow-of-funds identity $M = (1-q)D$ connects outside money
+to inside money:
+
+```{r}
+#| label: baseline-fof
+M <- sum(par$m)
+D <- bl$D
+cat("Outside money:     M =", M, "\n")
+cat("Aggregate credit:  D =", round(D, 4), "\n")
+cat("(1-q) * D =", round((1 - par$q) * D, 4), "\n")
+cat("Payment capacity: M + qD =", round(M + par$q * D, 4), "\n")
+```
+
+## Substitution benchmark (Proposition 1)
+
+Proposition 1 states that introducing a second credit source at the same
+price $q$ leaves the equilibrium unchanged.  We verify:
+
+```{r}
+#| label: substitution
+res2 <- dgme_solve(par, variants = c("baseline", "substitution"))
+bl  <- res2$results$baseline
+sub <- res2$results$substitution
+
+cat("Price difference (max):", max(abs(bl$p - sub$p)), "\n")
+cat("Allocation difference (max):", max(abs(bl$x - sub$x)), "\n")
+```
+
+Prices and allocations are identical, confirming Proposition 1: the
+composition of credit between bank and issuer is indeterminate, but the
+total is pinned down by household optimality.
+
+
+# The Treasury channel {#sec-treasury}
+
+## Setup
+
+The canonical parameterisation includes Treasury-channel defaults:
+$\rho = 0.10$ (10% of reserves in settlement media), $\eta = 0.80$
+(80% fiscal pass-through), and $S = 1.0$ (moderate issuance).
+
+```{r}
+#| label: treasury-params
+cat("rho =", par$rho, " (reserve composition)\n")
+cat("eta =", par$eta, " (fiscal pass-through)\n")
+cat("S   =", par$S, "   (aggregate issuance)\n")
+G <- par$eta * (1 - par$rho) * par$S
+cat("G   = eta*(1-rho)*S =", G, " (Treasury spending injection)\n")
+```
+
+## Baseline vs. Treasury equilibrium
+
+```{r}
+#| label: treasury-solve
+res_bt <- dgme_solve(par, variants = c("baseline", "treasury"))
+dgme_table(res_bt, "comparison", format = "markdown")
+```
+
+Prices are unambiguously higher under the Treasury channel, confirming
+Proposition 3.
+
+## Varying reserve composition ($\rho$)
+
+The paper argues that the policy-relevant parameter is reserve
+*composition*, not the reserve *ratio*.  We demonstrate by sweeping
+$\rho$ from 0 to 1:
+
+```{r}
+#| label: rho-sweep
+rho_grid <- seq(0, 1, by = 0.1)
+rho_family <- dgme_vary(par, rho = rho_grid)
+
+# Solve each economy
+rho_results <- lapply(seq_len(rho_family$n), function(i) {
+  p <- rho_family[[i]]
+  r <- dgme_solve(p, variants = c("baseline", "treasury"))
+  bl <- r$results$baseline
+  tr <- r$results$treasury
+  data.frame(
+    rho        = p$rho,
+    G          = p$eta * (1 - p$rho) * p$S,
+    p1_base    = bl$p[1],
+    p2_base    = bl$p[2],
+    p1_treas   = tr$p[1],
+    p2_treas   = tr$p[2],
+    dp1_pct    = 100 * (tr$p[1] / bl$p[1] - 1),
+    dp2_pct    = 100 * (tr$p[2] / bl$p[2] - 1),
+    PC_base    = bl$payment_capacity,
+    PC_treas   = tr$payment_capacity
+  )
+})
+rho_df <- do.call(rbind, rho_results)
+```
+
+```{r}
+#| label: rho-table
+#| tbl-cap: "Effect of reserve composition ($\\rho$) on prices.  Parameters: $\\eta = 0.80$, $S = 1.0$."
+knitr::kable(rho_df, digits = 3, row.names = FALSE,
+             col.names = c("$\\rho$", "$G$",
+                           "$p_1^{\\text{base}}$", "$p_2^{\\text{base}}$",
+                           "$p_1^{\\text{treas}}$", "$p_2^{\\text{treas}}$",
+                           "$\\Delta p_1$ (\\%)", "$\\Delta p_2$ (\\%)",
+                           "$\\text{PC}^{\\text{base}}$",
+                           "$\\text{PC}^{\\text{treas}}$"))
+```
+
+At $\rho = 1$ (full custody of settlement media), the Treasury channel is
+shut down and prices are identical to baseline.  As $\rho$ falls toward
+zero, more reserves are deployed into credit claims, and the inflationary
+effect grows.
+
+## Varying aggregate issuance ($S$)
+
+```{r}
+#| label: S-sweep
+S_grid <- seq(0, 5, by = 0.5)
+S_family <- dgme_vary(par, S = S_grid)
+
+S_results <- lapply(seq_len(S_family$n), function(i) {
+  p <- S_family[[i]]
+  r <- dgme_solve(p, variants = c("baseline", "treasury"))
+  bl <- r$results$baseline
+  tr <- r$results$treasury
+  data.frame(
+    S          = p$S,
+    G          = p$eta * (1 - p$rho) * p$S,
+    dp1_pct    = 100 * (tr$p[1] / bl$p[1] - 1),
+    dp2_pct    = 100 * (tr$p[2] / bl$p[2] - 1),
+    PC_treas   = tr$payment_capacity
+  )
+})
+S_df <- do.call(rbind, S_results)
+```
+
+```{r}
+#| label: S-table
+#| tbl-cap: "Effect of aggregate issuance ($S$) on prices.  Parameters: $\\rho = 0.10$, $\\eta = 0.80$."
+knitr::kable(S_df, digits = 3, row.names = FALSE,
+             col.names = c("$S$", "$G$",
+                           "$\\Delta p_1$ (\\%)", "$\\Delta p_2$ (\\%)",
+                           "$\\text{PC}^{\\text{treas}}$"))
+```
+
+The price-level effect scales approximately linearly with $S$, since
+$G = \eta(1-\rho)S$ is linear in $S$.
+
+## Varying fiscal pass-through ($\eta$)
+
+```{r}
+#| label: eta-sweep
+eta_grid <- seq(0, 1, by = 0.1)
+eta_family <- dgme_vary(par, eta = eta_grid)
+
+eta_results <- lapply(seq_len(eta_family$n), function(i) {
+  p <- eta_family[[i]]
+  r <- dgme_solve(p, variants = c("baseline", "treasury"))
+  bl <- r$results$baseline
+  tr <- r$results$treasury
+  data.frame(
+    eta        = p$eta,
+    G          = p$eta * (1 - p$rho) * p$S,
+    dp1_pct    = 100 * (tr$p[1] / bl$p[1] - 1),
+    dp2_pct    = 100 * (tr$p[2] / bl$p[2] - 1)
+  )
+})
+eta_df <- do.call(rbind, eta_results)
+```
+
+```{r}
+#| label: eta-table
+#| tbl-cap: "Effect of fiscal pass-through ($\\eta$) on prices.  Parameters: $\\rho = 0.10$, $S = 1.0$."
+knitr::kable(eta_df, digits = 3, row.names = FALSE,
+             col.names = c("$\\eta$", "$G$",
+                           "$\\Delta p_1$ (\\%)", "$\\Delta p_2$ (\\%)"))
+```
+
+At $\eta = 0$ (pure Ricardian equivalence), the Treasury channel is
+inactive and stablecoins are neutral.  The inflationary effect grows
+linearly with $\eta$.
+
+## Neutrality of tokenised deposits
+
+Tokenised deposits do not expand payment capacity because the issuer
+(the bank) holds the same claims on outside money it held before.
+In the DG framework, this corresponds to the substitution benchmark:
+
+```{r}
+#| label: tokenised-deposits
+res_sub <- dgme_solve(par, variants = c("baseline", "substitution"))
+cat("Price difference (baseline vs. substitution):",
+    max(abs(res_sub$results$baseline$p - res_sub$results$substitution$p)),
+    "\n")
+cat("Tokenised deposits are neutral in this framework.\n")
+```
+
+## Monetary policy response
+
+Can the central bank offset stablecoin-induced inflation?  The paper
+shows this requires contracting bank credit by $\eta(1-\rho)S$.  We
+illustrate by finding the $q'$ that restores baseline payment capacity:
+
+```{r}
+#| label: monetary-offset
+bl_pc <- res_bt$results$baseline$payment_capacity
+tr_pc <- res_bt$results$treasury$payment_capacity
+G     <- par$eta * (1 - par$rho) * par$S
+
+cat("Baseline PC:  ", round(bl_pc, 4), "\n")
+cat("Treasury PC:  ", round(tr_pc, 4), "\n")
+cat("Injection G:  ", round(G, 4), "\n")
+cat("PC expansion: ", round(tr_pc - bl_pc, 4), "\n")
+```
+
+The central bank would need to tighten by lowering $q$ (raising the
+interest rate) until $M + q'D' + G = M + qD$, i.e., $q'D' = qD - G$.
+This contraction comes at the cost of a wider bid--ask spread and reduced
+trading efficiency.
+
+
+# Competing outside money {#sec-competing}
+
+## Setup
+
+Section 4 of the paper considers the counterfactual of stablecoins as
+parallel outside money.  The canonical parameterisation sets stablecoin
+money endowments proportional to sovereign money:
+
+```{r}
+#| label: competing-params
+cat("m   = (", paste(par$m, collapse = ", "), ")    M   =", sum(par$m), "\n")
+cat("m_S = (", paste(par$m_S, collapse = ", "), ")  M_S =", sum(par$m_S), "\n")
+cat("m_S / m = (", paste(round(par$m_S / par$m, 2), collapse = ", "), ")\n")
+cat("Proportional: m_S = 0.5 * m\n")
+```
+
+The proportionality ensures that $m^h_S / m^h = M_S / M$ for all $h$,
+which is the condition under which Proposition 4(iii) guarantees that
+real allocations are independent of the exchange rate $\bar{e}$.
+
+## Exchange-rate indeterminacy (Proposition 4)
+
+```{r}
+#| label: competing-solve
+res_comp <- dgme_solve(par, variants = "competing")
+comp <- res_comp$results$competing
+```
+
+The indeterminacy table shows how sovereign-unit prices vary with the
+exchange rate while relative prices and real allocations remain constant:
+
+```{r}
+#| label: indeterminacy-table
+dgme_table(res_comp, "indeterminacy", format = "markdown")
+```
+
+```{r}
+#| label: indeterminacy-detail
+# Verify relative price invariance
+rel_p <- comp$p_grid[, 1] / comp$p_grid[, 2]
+cat("Relative prices across exchange rates:\n")
+for (i in seq_along(par$e_grid)) {
+  cat(sprintf("  e = %.1f:  p1/p2 = %.6f\n", par$e_grid[i], rel_p[i]))
+}
+cat("Max deviation:", format(max(abs(rel_p - rel_p[1])), scientific = TRUE), "\n")
+```
+
+The relative price $p_1/p_2$ is constant to machine precision across all
+exchange rates.  This confirms Proposition 4: in the frictionless
+benchmark with proportional money holdings, the exchange rate is a free
+parameter that scales nominal prices without affecting real outcomes.
+
+## Economic interpretation
+
+The indeterminacy is not a numeraire artefact---it reflects a genuine
+economic problem.  In the absence of the redemption commitment that pins
+the stablecoin's value at par, the exchange rate between two fiat monies
+has no fundamental anchor.  The frictionless case produces a continuum of
+equilibria; with frictions (conversion costs, counterparty risk), this
+would manifest as exchange-rate volatility driven by expectations and
+coordination failures.
+
+The current settlement hierarchy---in which stablecoins are redeemable
+claims on sovereign money---prevents this indeterminacy.  The redemption
+commitment fixes the exchange rate by contract, not by equilibrium.
+
+
+# Comparative statics on the baseline {#sec-comparative}
+
+## The role of monetary friction ($q$)
+
+As $q \to 1$, the cost of bridging the asynchronicity of exchange
+vanishes and the economy approaches Walrasian efficiency:
+
+```{r}
+#| label: q-sweep
+q_grid <- seq(0.3, 0.95, by = 0.05)
+q_family <- dgme_vary(par, q = q_grid)
+
+q_results <- lapply(seq_len(q_family$n), function(i) {
+  p <- q_family[[i]]
+  r <- dgme_solve(p, variants = "baseline")
+  bl <- r$results$baseline
+  data.frame(
+    q     = p$q,
+    r     = (1 - p$q) / p$q,
+    p1    = bl$p[1],
+    p2    = bl$p[2],
+    D     = bl$D,
+    PC    = bl$payment_capacity,
+    u1    = bl$utilities[1],
+    u2    = bl$utilities[2]
+  )
+})
+q_df <- do.call(rbind, q_results)
+```
+
+```{r}
+#| label: q-table
+#| tbl-cap: "Baseline equilibrium across monetary friction levels."
+knitr::kable(q_df, digits = 3, row.names = FALSE,
+             col.names = c("$q$", "$r$", "$p_1$", "$p_2$",
+                           "$D$", "PC", "$u^1$", "$u^2$"))
+```
+
+As the interest rate falls (higher $q$), credit expands, utilities rise,
+and the economy approaches the frictionless allocation.  The gains-from-trade
+condition requires $\gamma(e) > r$; at very low $q$ (high $r$), the
+friction may be too severe for equilibrium to exist.
+
+
+# Solving all variants at once {#sec-all}
+
+The canonical parameterisation is designed so that all four variants
+solve out of the box:
+
+```{r}
+#| label: all-variants
+res_all <- dgme_solve(par, variants = "all")
+cat("Variants solved:", paste(res_all$variants_solved, collapse = ", "), "\n")
+```
+
+```{r}
+#| label: all-check
+for (v in res_all$variants_solved) {
+  r <- res_all$results[[v]]
+  if (!is.null(r$check)) {
+    cat(v, ": check passed =", r$check$passed, "\n")
+  } else {
+    chk <- dgme_check(r)
+    cat(v, ": check passed =", chk$passed, "\n")
+  }
+}
+```
+
+
+# Generating publication tables {#sec-tables}
+
+The `dgme_table` function produces LaTeX-ready tables:
+
+```{r}
+#| label: param-table-latex
+#| eval: false
+# Parameter table
+dgme_table(res_all, "parameters",
+           format = "latex",
+           save = TRUE,
+           path = "tables/",
+           caption = "Canonical parameterisation",
+           label = "tab:params")
+
+# Baseline vs. Treasury comparison
+dgme_table(res_all, "comparison",
+           variants = c("baseline", "treasury"),
+           format = "latex",
+           save = TRUE,
+           path = "tables/",
+           caption = "Baseline vs.\\ Treasury channel",
+           label = "tab:comparison")
+
+# Indeterminacy table
+dgme_table(res_all, "indeterminacy",
+           format = "latex",
+           save = TRUE,
+           path = "tables/",
+           caption = "Exchange-rate indeterminacy with two outside monies",
+           label = "tab:indeterminacy")
+```
+
+
+# Generating TikZ figures {#sec-tikz}
+
+The budget-set and nominal-transfer diagrams from the paper can be
+reproduced directly:
+
+```{r}
+#| label: tikz-output
+#| eval: false
+bl <- res_all$results$baseline
+
+# Budget set in net-trade space (Figure 1 in the paper)
+dgme_tikz_na_real(bl, households = 1, write = TRUE, path = "figures/")
+
+# Feasibility set in nominal-transfer space (Figure 2 in the paper)
+dgme_tikz_me_nominal(bl, write = TRUE, path = "figures/")
+```
+
+
+# Session information
+
+```{r}
+#| label: session-info
+sessionInfo()
+```

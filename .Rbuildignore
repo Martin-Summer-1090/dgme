@@ -1,2 +1,6 @@
-^dgme\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+^\.github$
+^inst/canonical_parameterization\.md$

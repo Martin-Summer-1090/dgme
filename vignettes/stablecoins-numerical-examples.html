@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Martin Summer">
+<meta name="dcterms.date" content="2026-02-11">
+
+<title>Stablecoins and the Monetary Order: Numerical Examples</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="stablecoins-numerical-examples_files/libs/clipboard/clipboard.min.js"></script>
+<script src="stablecoins-numerical-examples_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="stablecoins-numerical-examples_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="stablecoins-numerical-examples_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="stablecoins-numerical-examples_files/libs/quarto-html/popper.min.js"></script>
+<script src="stablecoins-numerical-examples_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="stablecoins-numerical-examples_files/libs/quarto-html/anchor.min.js"></script>
+<link href="stablecoins-numerical-examples_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="stablecoins-numerical-examples_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="stablecoins-numerical-examples_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="stablecoins-numerical-examples_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="stablecoins-numerical-examples_files/libs/bootstrap/bootstrap-f82a7a0b9397ad229aaec750ab5903f9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#sec-baseline" id="toc-sec-baseline" class="nav-link" data-scroll-target="#sec-baseline"><span class="header-section-number">2</span> The baseline economy</a>
+  <ul class="collapse">
+  <li><a href="#parameterisation" id="toc-parameterisation" class="nav-link" data-scroll-target="#parameterisation"><span class="header-section-number">2.1</span> Parameterisation</a></li>
+  <li><a href="#solving-for-equilibrium" id="toc-solving-for-equilibrium" class="nav-link" data-scroll-target="#solving-for-equilibrium"><span class="header-section-number">2.2</span> Solving for equilibrium</a></li>
+  <li><a href="#equilibrium-allocation" id="toc-equilibrium-allocation" class="nav-link" data-scroll-target="#equilibrium-allocation"><span class="header-section-number">2.3</span> Equilibrium allocation</a></li>
+  <li><a href="#consistency-checks" id="toc-consistency-checks" class="nav-link" data-scroll-target="#consistency-checks"><span class="header-section-number">2.4</span> Consistency checks</a></li>
+  <li><a href="#flow-of-funds" id="toc-flow-of-funds" class="nav-link" data-scroll-target="#flow-of-funds"><span class="header-section-number">2.5</span> Flow of funds</a></li>
+  <li><a href="#substitution-benchmark-proposition-1" id="toc-substitution-benchmark-proposition-1" class="nav-link" data-scroll-target="#substitution-benchmark-proposition-1"><span class="header-section-number">2.6</span> Substitution benchmark (Proposition 1)</a></li>
+  </ul></li>
+  <li><a href="#sec-treasury" id="toc-sec-treasury" class="nav-link" data-scroll-target="#sec-treasury"><span class="header-section-number">3</span> The Treasury channel</a>
+  <ul class="collapse">
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">3.1</span> Setup</a></li>
+  <li><a href="#baseline-vs.-treasury-equilibrium" id="toc-baseline-vs.-treasury-equilibrium" class="nav-link" data-scroll-target="#baseline-vs.-treasury-equilibrium"><span class="header-section-number">3.2</span> Baseline vs.&nbsp;Treasury equilibrium</a></li>
+  <li><a href="#varying-reserve-composition-rho" id="toc-varying-reserve-composition-rho" class="nav-link" data-scroll-target="#varying-reserve-composition-rho"><span class="header-section-number">3.3</span> Varying reserve composition (<span class="math inline">\(\rho\)</span>)</a></li>
+  <li><a href="#varying-aggregate-issuance-s" id="toc-varying-aggregate-issuance-s" class="nav-link" data-scroll-target="#varying-aggregate-issuance-s"><span class="header-section-number">3.4</span> Varying aggregate issuance (<span class="math inline">\(S\)</span>)</a></li>
+  <li><a href="#varying-fiscal-pass-through-eta" id="toc-varying-fiscal-pass-through-eta" class="nav-link" data-scroll-target="#varying-fiscal-pass-through-eta"><span class="header-section-number">3.5</span> Varying fiscal pass-through (<span class="math inline">\(\eta\)</span>)</a></li>
+  <li><a href="#neutrality-of-tokenised-deposits" id="toc-neutrality-of-tokenised-deposits" class="nav-link" data-scroll-target="#neutrality-of-tokenised-deposits"><span class="header-section-number">3.6</span> Neutrality of tokenised deposits</a></li>
+  <li><a href="#monetary-policy-response" id="toc-monetary-policy-response" class="nav-link" data-scroll-target="#monetary-policy-response"><span class="header-section-number">3.7</span> Monetary policy response</a></li>
+  </ul></li>
+  <li><a href="#sec-competing" id="toc-sec-competing" class="nav-link" data-scroll-target="#sec-competing"><span class="header-section-number">4</span> Competing outside money</a>
+  <ul class="collapse">
+  <li><a href="#setup-1" id="toc-setup-1" class="nav-link" data-scroll-target="#setup-1"><span class="header-section-number">4.1</span> Setup</a></li>
+  <li><a href="#exchange-rate-indeterminacy-proposition-4" id="toc-exchange-rate-indeterminacy-proposition-4" class="nav-link" data-scroll-target="#exchange-rate-indeterminacy-proposition-4"><span class="header-section-number">4.2</span> Exchange-rate indeterminacy (Proposition 4)</a></li>
+  <li><a href="#economic-interpretation" id="toc-economic-interpretation" class="nav-link" data-scroll-target="#economic-interpretation"><span class="header-section-number">4.3</span> Economic interpretation</a></li>
+  </ul></li>
+  <li><a href="#sec-comparative" id="toc-sec-comparative" class="nav-link" data-scroll-target="#sec-comparative"><span class="header-section-number">5</span> Comparative statics on the baseline</a>
+  <ul class="collapse">
+  <li><a href="#the-role-of-monetary-friction-q" id="toc-the-role-of-monetary-friction-q" class="nav-link" data-scroll-target="#the-role-of-monetary-friction-q"><span class="header-section-number">5.1</span> The role of monetary friction (<span class="math inline">\(q\)</span>)</a></li>
+  </ul></li>
+  <li><a href="#sec-all" id="toc-sec-all" class="nav-link" data-scroll-target="#sec-all"><span class="header-section-number">6</span> Solving all variants at once</a></li>
+  <li><a href="#sec-tables" id="toc-sec-tables" class="nav-link" data-scroll-target="#sec-tables"><span class="header-section-number">7</span> Generating publication tables</a></li>
+  <li><a href="#sec-tikz" id="toc-sec-tikz" class="nav-link" data-scroll-target="#sec-tikz"><span class="header-section-number">8</span> Generating TikZ figures</a></li>
+  <li><a href="#session-information" id="toc-session-information" class="nav-link" data-scroll-target="#session-information"><span class="header-section-number">9</span> Session information</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="stablecoins-numerical-examples.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Stablecoins and the Monetary Order: Numerical Examples</h1>
+<p class="subtitle lead">Companion computations using the dgme package</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Martin Summer </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 11, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>This vignette serves two purposes. First, it introduces the <code>dgme</code> package by walking through the full pipeline—from parameterisation to equilibrium computation to tables and visualisations. Second, it reproduces the numerical examples that accompany the paper “Stablecoins and the Monetary Order: Inflationary Finance and Competing Settlement Assets.”</p>
+<p>The package implements the Dubey–Geanakoplos (DG) model of a monetary economy for the case of two households and two goods with Cobb–Douglas preferences. All computations below can be reproduced by installing the package and running this document.</p>
+</section>
+<section id="sec-baseline" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The baseline economy</h1>
+<section id="parameterisation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="parameterisation"><span class="header-section-number">2.1</span> Parameterisation</h2>
+<p>The canonical example uses asymmetric endowments and preferences to create clear gains from trade under a moderate monetary friction.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>par <span class="ot">&lt;-</span> <span class="fu">dgme_parametrize</span>(<span class="st">"paper_example_1"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in dgme_parametrize("paper_example_1"): Gains-from-trade condition may
+not be satisfied for q = 0.6 (r = 0.6667). Monetary equilibrium may not exist.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>par</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DG Monetary Economy Parameters
+Label: Paper Example 1 (canonical) 
+Preset: paper_example_1 
+
+Bond price q = 0.6  (interest rate r = 0.6667 )
+
+Endowments:
+   good1 good2
+h1   2.8   1.7
+h2   0.3   2.1
+
+Cobb-Douglas exponents: alpha = 0.22, 0.84 
+  (each alpha^h is independent; they need not sum to 1)
+Outside money: m = 0.4, 1.8  (M = 2.2 )
+
+Treasury channel parameters (Variant 2):
+  rho = 0.1 , eta = 0.8 , S = 1 
+  Treasury spending G = eta*(1-rho)*S = 0.72 
+  g_shares = 0.5, 0.5 
+
+Competing outside money (Variant 4):
+  m_S = 0.2, 0.9  (M_S = 1.1 )
+  Exchange rate grid:  6  values in [ 0.5 ,  3 ]</code></pre>
+</div>
+</div>
+<p>Household 1 is endowed with much of good 1 but prefers good 2 (<span class="math inline">\(\alpha^1 = 0.22\)</span>); household 2 has the opposite pattern (<span class="math inline">\(\alpha^2 = 0.84\)</span>). The bond price <span class="math inline">\(q = 0.6\)</span> implies an interest rate <span class="math inline">\(r = (1-q)/q \approx 0.667\)</span>—substantial enough to make the monetary friction visible in the geometry of the budget set.</p>
+</section>
+<section id="solving-for-equilibrium" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="solving-for-equilibrium"><span class="header-section-number">2.2</span> Solving for equilibrium</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(par, <span class="at">variants =</span> <span class="st">"baseline"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>bl  <span class="ot">&lt;-</span> res<span class="sc">$</span>results<span class="sc">$</span>baseline</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The solver finds the equilibrium price vector and verifies convergence:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Prices:           p = ("</span>, <span class="fu">round</span>(bl<span class="sc">$</span>p[<span class="dv">1</span>], <span class="dv">4</span>), <span class="st">","</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(bl<span class="sc">$</span>p[<span class="dv">2</span>], <span class="dv">4</span>), <span class="st">")</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Prices:           p = ( 2.0044 , 1.674 )</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Relative price: p1/p2 ="</span>, <span class="fu">round</span>(bl<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">2</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Relative price: p1/p2 = 1.1974 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Converged:       "</span>, bl<span class="sc">$</span>converged, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Converged:        TRUE </code></pre>
+</div>
+</div>
+</section>
+<section id="equilibrium-allocation" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="equilibrium-allocation"><span class="header-section-number">2.3</span> Equilibrium allocation</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res, <span class="st">"equilibrium"</span>, <span class="at">format =</span> <span class="st">"markdown"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>| Quantity | Value |
+|---|---|
+| $\bar p_1$ | 2.0044 |
+| $\bar p_2$ | 1.6740 |
+| $\bar x^1$ | (1.2097, 3.0815) |
+| $\bar x^2$ | (1.8903, 0.7185) |
+| $\bar \tau^1$ | (-1.5903, 1.3815) |
+| $\bar \tau^2$ | (1.5903, -1.3815) |
+| $\bar b^1$ | -3.1875 |
+| $\bar b^2$ | -2.3125 |
+| $\bar D$ | 5.5000 |
+| $M + q\bar D$ | 5.5000 |
+| $\bar \nu^1$ | (0.0000, 0.0000) |
+| $\bar \nu^2$ | (0.0000, 0.0000) |
+| $u^1(\bar x^1)$ | 2.5086 |
+| $u^2(\bar x^2)$ | 1.6192 |
+| $u^1(e^1)$ (autarky) | 1.8973 |
+| $u^2(e^2)$ (autarky) | 0.4096 |</code></pre>
+</div>
+</div>
+<p>Both households trade: household 1 sells good 1 and buys good 2; household 2 does the opposite. Both payment constraints bind exactly —any slack would mean the household could buy more, contradicting strict monotonicity.</p>
+</section>
+<section id="consistency-checks" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="consistency-checks"><span class="header-section-number">2.4</span> Consistency checks</h2>
+<p>The <code>dgme_check</code> function verifies all theoretical conditions:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>chk <span class="ot">&lt;-</span> <span class="fu">dgme_check</span>(bl)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(chk)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DG Equilibrium Consistency Check (baseline)
+------------------------------------------------------- 
+  ✓  market_clearing              Max |excess demand| = 1.87e-12 (tol = 1.00e-06)
+  ✓  flow_of_funds                |M - (1-q)D| = 3.53e-12 (tol = 1.00e-06)
+  ✓  budget_constraint            Max budget violation = 2.22e-16 (tol = 1.00e-06)
+  ✓  consumption_nonneg           Min consumption = 0.718539
+  ✓  nominal_transfers_nonneg     Min nominal transfer = 0.00e+00 (tol = 1.00e-06)
+  ✓  optimality                   Max utility gap vs. alternatives = 0.00e+00 (tol = 1.00e-06)
+  ✓  gains_from_trade             Utility gains: h1 = 0.279299, h2 = 1.374580
+------------------------------------------------------- 
+Result: 7/7 passed — all checks OK</code></pre>
+</div>
+</div>
+</section>
+<section id="flow-of-funds" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="flow-of-funds"><span class="header-section-number">2.5</span> Flow of funds</h2>
+<p>The aggregate flow-of-funds identity <span class="math inline">\(M = (1-q)D\)</span> connects outside money to inside money:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">sum</span>(par<span class="sc">$</span>m)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> bl<span class="sc">$</span>D</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Outside money:     M ="</span>, M, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outside money:     M = 2.2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Aggregate credit:  D ="</span>, <span class="fu">round</span>(D, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Aggregate credit:  D = 5.5 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"(1-q) * D ="</span>, <span class="fu">round</span>((<span class="dv">1</span> <span class="sc">-</span> par<span class="sc">$</span>q) <span class="sc">*</span> D, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(1-q) * D = 2.2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Payment capacity: M + qD ="</span>, <span class="fu">round</span>(M <span class="sc">+</span> par<span class="sc">$</span>q <span class="sc">*</span> D, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Payment capacity: M + qD = 5.5 </code></pre>
+</div>
+</div>
+</section>
+<section id="substitution-benchmark-proposition-1" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="substitution-benchmark-proposition-1"><span class="header-section-number">2.6</span> Substitution benchmark (Proposition 1)</h2>
+<p>Proposition 1 states that introducing a second credit source at the same price <span class="math inline">\(q\)</span> leaves the equilibrium unchanged. We verify:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(par, <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"substitution"</span>))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>bl  <span class="ot">&lt;-</span> res2<span class="sc">$</span>results<span class="sc">$</span>baseline</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> res2<span class="sc">$</span>results<span class="sc">$</span>substitution</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Price difference (max):"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(bl<span class="sc">$</span>p <span class="sc">-</span> sub<span class="sc">$</span>p)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Price difference (max): 0 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Allocation difference (max):"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(bl<span class="sc">$</span>x <span class="sc">-</span> sub<span class="sc">$</span>x)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Allocation difference (max): 0 </code></pre>
+</div>
+</div>
+<p>Prices and allocations are identical, confirming Proposition 1: the composition of credit between bank and issuer is indeterminate, but the total is pinned down by household optimality.</p>
+</section>
+</section>
+<section id="sec-treasury" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> The Treasury channel</h1>
+<section id="setup" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">3.1</span> Setup</h2>
+<p>The canonical parameterisation includes Treasury-channel defaults: <span class="math inline">\(\rho = 0.10\)</span> (10% of reserves in settlement media), <span class="math inline">\(\eta = 0.80\)</span> (80% fiscal pass-through), and <span class="math inline">\(S = 1.0\)</span> (moderate issuance).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"rho ="</span>, par<span class="sc">$</span>rho, <span class="st">" (reserve composition)</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rho = 0.1  (reserve composition)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"eta ="</span>, par<span class="sc">$</span>eta, <span class="st">" (fiscal pass-through)</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>eta = 0.8  (fiscal pass-through)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"S   ="</span>, par<span class="sc">$</span>S, <span class="st">"   (aggregate issuance)</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>S   = 1    (aggregate issuance)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>G <span class="ot">&lt;-</span> par<span class="sc">$</span>eta <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> par<span class="sc">$</span>rho) <span class="sc">*</span> par<span class="sc">$</span>S</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"G   = eta*(1-rho)*S ="</span>, G, <span class="st">" (Treasury spending injection)</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>G   = eta*(1-rho)*S = 0.72  (Treasury spending injection)</code></pre>
+</div>
+</div>
+</section>
+<section id="baseline-vs.-treasury-equilibrium" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="baseline-vs.-treasury-equilibrium"><span class="header-section-number">3.2</span> Baseline vs.&nbsp;Treasury equilibrium</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>res_bt <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(par, <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"treasury"</span>))</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res_bt, <span class="st">"comparison"</span>, <span class="at">format =</span> <span class="st">"markdown"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>| Quantity | baseline | treasury |
+|---|---|---|
+| $\bar p_1$ | 2.0044 | 2.6464 |
+| $\bar p_2$ | 1.6740 | 2.2677 |
+| $\bar x^1_1$ | 1.2097 | 1.2554 |
+| $\bar x^1_2$ | 3.0815 | 3.1166 |
+| $\bar x^2_1$ | 1.8903 | 1.8446 |
+| $\bar x^2_2$ | 0.7185 | 0.6834 |
+| $\bar D$ | 5.5000 | 7.3000 |
+| $M + q\bar D$ | 5.5000 | 7.3000 |
+| $u^1(\bar x^1)$ | 2.5086 | 2.5516 |
+| $u^2(\bar x^2)$ | 1.6192 | 1.5736 |</code></pre>
+</div>
+</div>
+<p>Prices are unambiguously higher under the Treasury channel, confirming Proposition 3.</p>
+</section>
+<section id="varying-reserve-composition-rho" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="varying-reserve-composition-rho"><span class="header-section-number">3.3</span> Varying reserve composition (<span class="math inline">\(\rho\)</span>)</h2>
+<p>The paper argues that the policy-relevant parameter is reserve <em>composition</em>, not the reserve <em>ratio</em>. We demonstrate by sweeping <span class="math inline">\(\rho\)</span> from 0 to 1:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>rho_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>rho_family <span class="ot">&lt;-</span> <span class="fu">dgme_vary</span>(par, <span class="at">rho =</span> rho_grid)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Solve each economy</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>rho_results <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(rho_family<span class="sc">$</span>n), <span class="cf">function</span>(i) {</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> rho_family[[i]]</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(p, <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"treasury"</span>))</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  bl <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>baseline</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  tr <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>treasury</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">rho        =</span> p<span class="sc">$</span>rho,</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">G          =</span> p<span class="sc">$</span>eta <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p<span class="sc">$</span>rho) <span class="sc">*</span> p<span class="sc">$</span>S,</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">p1_base    =</span> bl<span class="sc">$</span>p[<span class="dv">1</span>],</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">p2_base    =</span> bl<span class="sc">$</span>p[<span class="dv">2</span>],</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">p1_treas   =</span> tr<span class="sc">$</span>p[<span class="dv">1</span>],</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">p2_treas   =</span> tr<span class="sc">$</span>p[<span class="dv">2</span>],</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">dp1_pct    =</span> <span class="dv">100</span> <span class="sc">*</span> (tr<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">dp2_pct    =</span> <span class="dv">100</span> <span class="sc">*</span> (tr<span class="sc">$</span>p[<span class="dv">2</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC_base    =</span> bl<span class="sc">$</span>payment_capacity,</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC_treas   =</span> tr<span class="sc">$</span>payment_capacity</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>rho_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, rho_results)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell" data-tbl-cap="Effect of reserve composition ($\rho$) on prices.  Parameters: $\eta = 0.80$, $S = 1.0$.">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(rho_df, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">rho$"</span>, <span class="st">"$G$"</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$p_1^{</span><span class="sc">\\</span><span class="st">text{base}}$"</span>, <span class="st">"$p_2^{</span><span class="sc">\\</span><span class="st">text{base}}$"</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$p_1^{</span><span class="sc">\\</span><span class="st">text{treas}}$"</span>, <span class="st">"$p_2^{</span><span class="sc">\\</span><span class="st">text{treas}}$"</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$</span><span class="sc">\\</span><span class="st">Delta p_1$ (</span><span class="sc">\\</span><span class="st">%)"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">Delta p_2$ (</span><span class="sc">\\</span><span class="st">%)"</span>,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$</span><span class="sc">\\</span><span class="st">text{PC}^{</span><span class="sc">\\</span><span class="st">text{base}}$"</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$</span><span class="sc">\\</span><span class="st">text{PC}^{</span><span class="sc">\\</span><span class="st">text{treas}}$"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Effect of reserve composition (<span class="math inline">\(\rho\)</span>) on prices. Parameters: <span class="math inline">\(\eta = 0.80\)</span>, <span class="math inline">\(S = 1.0\)</span>.</caption>
+<colgroup>
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(\rho\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(G\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(p_1^{\text{base}}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(p_2^{\text{base}}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(p_1^{\text{treas}}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(p_2^{\text{treas}}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\Delta p_1\)</span> (%)</th>
+<th style="text-align: right;"><span class="math inline">\(\Delta p_2\)</span> (%)</th>
+<th style="text-align: right;"><span class="math inline">\(\text{PC}^{\text{base}}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\text{PC}^{\text{treas}}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.718</td>
+<td style="text-align: right;">2.334</td>
+<td style="text-align: right;">35.588</td>
+<td style="text-align: right;">39.410</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">7.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.646</td>
+<td style="text-align: right;">2.268</td>
+<td style="text-align: right;">32.029</td>
+<td style="text-align: right;">35.469</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">7.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.575</td>
+<td style="text-align: right;">2.202</td>
+<td style="text-align: right;">28.470</td>
+<td style="text-align: right;">31.528</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">7.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.504</td>
+<td style="text-align: right;">2.136</td>
+<td style="text-align: right;">24.911</td>
+<td style="text-align: right;">27.587</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">6.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.432</td>
+<td style="text-align: right;">2.070</td>
+<td style="text-align: right;">21.353</td>
+<td style="text-align: right;">23.646</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">6.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.361</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">17.794</td>
+<td style="text-align: right;">19.705</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">6.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.290</td>
+<td style="text-align: right;">1.938</td>
+<td style="text-align: right;">14.235</td>
+<td style="text-align: right;">15.764</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">6.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.218</td>
+<td style="text-align: right;">1.872</td>
+<td style="text-align: right;">10.676</td>
+<td style="text-align: right;">11.823</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">6.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.147</td>
+<td style="text-align: right;">1.806</td>
+<td style="text-align: right;">7.118</td>
+<td style="text-align: right;">7.882</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.9</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.076</td>
+<td style="text-align: right;">1.740</td>
+<td style="text-align: right;">3.559</td>
+<td style="text-align: right;">3.941</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">5.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">5.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>At <span class="math inline">\(\rho = 1\)</span> (full custody of settlement media), the Treasury channel is shut down and prices are identical to baseline. As <span class="math inline">\(\rho\)</span> falls toward zero, more reserves are deployed into credit claims, and the inflationary effect grows.</p>
+</section>
+<section id="varying-aggregate-issuance-s" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="varying-aggregate-issuance-s"><span class="header-section-number">3.4</span> Varying aggregate issuance (<span class="math inline">\(S\)</span>)</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>S_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="at">by =</span> <span class="fl">0.5</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>S_family <span class="ot">&lt;-</span> <span class="fu">dgme_vary</span>(par, <span class="at">S =</span> S_grid)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>S_results <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(S_family<span class="sc">$</span>n), <span class="cf">function</span>(i) {</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> S_family[[i]]</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(p, <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"treasury"</span>))</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  bl <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>baseline</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  tr <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>treasury</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">S          =</span> p<span class="sc">$</span>S,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">G          =</span> p<span class="sc">$</span>eta <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p<span class="sc">$</span>rho) <span class="sc">*</span> p<span class="sc">$</span>S,</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">dp1_pct    =</span> <span class="dv">100</span> <span class="sc">*</span> (tr<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">dp2_pct    =</span> <span class="dv">100</span> <span class="sc">*</span> (tr<span class="sc">$</span>p[<span class="dv">2</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC_treas   =</span> tr<span class="sc">$</span>payment_capacity</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>S_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, S_results)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell" data-tbl-cap="Effect of aggregate issuance ($S$) on prices.  Parameters: $\rho = 0.10$, $\eta = 0.80$.">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(S_df, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$S$"</span>, <span class="st">"$G$"</span>,</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$</span><span class="sc">\\</span><span class="st">Delta p_1$ (</span><span class="sc">\\</span><span class="st">%)"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">Delta p_2$ (</span><span class="sc">\\</span><span class="st">%)"</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$</span><span class="sc">\\</span><span class="st">text{PC}^{</span><span class="sc">\\</span><span class="st">text{treas}}$"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Effect of aggregate issuance (<span class="math inline">\(S\)</span>) on prices. Parameters: <span class="math inline">\(\rho = 0.10\)</span>, <span class="math inline">\(\eta = 0.80\)</span>.</caption>
+<colgroup>
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(S\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(G\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\Delta p_1\)</span> (%)</th>
+<th style="text-align: right;"><span class="math inline">\(\Delta p_2\)</span> (%)</th>
+<th style="text-align: right;"><span class="math inline">\(\text{PC}^{\text{treas}}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">5.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">16.014</td>
+<td style="text-align: right;">17.735</td>
+<td style="text-align: right;">6.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">32.029</td>
+<td style="text-align: right;">35.469</td>
+<td style="text-align: right;">7.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">1.08</td>
+<td style="text-align: right;">48.043</td>
+<td style="text-align: right;">53.204</td>
+<td style="text-align: right;">8.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">1.44</td>
+<td style="text-align: right;">64.058</td>
+<td style="text-align: right;">70.939</td>
+<td style="text-align: right;">9.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">80.072</td>
+<td style="text-align: right;">88.674</td>
+<td style="text-align: right;">10.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3.0</td>
+<td style="text-align: right;">2.16</td>
+<td style="text-align: right;">96.087</td>
+<td style="text-align: right;">106.408</td>
+<td style="text-align: right;">10.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">112.101</td>
+<td style="text-align: right;">124.143</td>
+<td style="text-align: right;">11.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4.0</td>
+<td style="text-align: right;">2.88</td>
+<td style="text-align: right;">128.116</td>
+<td style="text-align: right;">141.878</td>
+<td style="text-align: right;">12.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4.5</td>
+<td style="text-align: right;">3.24</td>
+<td style="text-align: right;">144.130</td>
+<td style="text-align: right;">159.612</td>
+<td style="text-align: right;">13.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">3.60</td>
+<td style="text-align: right;">160.145</td>
+<td style="text-align: right;">177.347</td>
+<td style="text-align: right;">14.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The price-level effect scales approximately linearly with <span class="math inline">\(S\)</span>, since <span class="math inline">\(G = \eta(1-\rho)S\)</span> is linear in <span class="math inline">\(S\)</span>.</p>
+</section>
+<section id="varying-fiscal-pass-through-eta" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="varying-fiscal-pass-through-eta"><span class="header-section-number">3.5</span> Varying fiscal pass-through (<span class="math inline">\(\eta\)</span>)</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>eta_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>eta_family <span class="ot">&lt;-</span> <span class="fu">dgme_vary</span>(par, <span class="at">eta =</span> eta_grid)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>eta_results <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(eta_family<span class="sc">$</span>n), <span class="cf">function</span>(i) {</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> eta_family[[i]]</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(p, <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"treasury"</span>))</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  bl <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>baseline</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  tr <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>treasury</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">eta        =</span> p<span class="sc">$</span>eta,</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">G          =</span> p<span class="sc">$</span>eta <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p<span class="sc">$</span>rho) <span class="sc">*</span> p<span class="sc">$</span>S,</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">dp1_pct    =</span> <span class="dv">100</span> <span class="sc">*</span> (tr<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">dp2_pct    =</span> <span class="dv">100</span> <span class="sc">*</span> (tr<span class="sc">$</span>p[<span class="dv">2</span>] <span class="sc">/</span> bl<span class="sc">$</span>p[<span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>eta_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, eta_results)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell" data-tbl-cap="Effect of fiscal pass-through ($\eta$) on prices.  Parameters: $\rho = 0.10$, $S = 1.0$.">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(eta_df, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">eta$"</span>, <span class="st">"$G$"</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$</span><span class="sc">\\</span><span class="st">Delta p_1$ (</span><span class="sc">\\</span><span class="st">%)"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">Delta p_2$ (</span><span class="sc">\\</span><span class="st">%)"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Effect of fiscal pass-through (<span class="math inline">\(\eta\)</span>) on prices. Parameters: <span class="math inline">\(\rho = 0.10\)</span>, <span class="math inline">\(S = 1.0\)</span>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(\eta\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(G\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\Delta p_1\)</span> (%)</th>
+<th style="text-align: right;"><span class="math inline">\(\Delta p_2\)</span> (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">4.004</td>
+<td style="text-align: right;">4.434</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">8.007</td>
+<td style="text-align: right;">8.867</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">12.011</td>
+<td style="text-align: right;">13.301</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">16.014</td>
+<td style="text-align: right;">17.735</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">20.018</td>
+<td style="text-align: right;">22.168</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">24.022</td>
+<td style="text-align: right;">26.602</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">28.025</td>
+<td style="text-align: right;">31.036</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">32.029</td>
+<td style="text-align: right;">35.469</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.9</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">36.033</td>
+<td style="text-align: right;">39.903</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">40.036</td>
+<td style="text-align: right;">44.337</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>At <span class="math inline">\(\eta = 0\)</span> (pure Ricardian equivalence), the Treasury channel is inactive and stablecoins are neutral. The inflationary effect grows linearly with <span class="math inline">\(\eta\)</span>.</p>
+</section>
+<section id="neutrality-of-tokenised-deposits" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="neutrality-of-tokenised-deposits"><span class="header-section-number">3.6</span> Neutrality of tokenised deposits</h2>
+<p>Tokenised deposits do not expand payment capacity because the issuer (the bank) holds the same claims on outside money it held before. In the DG framework, this corresponds to the substitution benchmark:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>res_sub <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(par, <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"substitution"</span>))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Price difference (baseline vs. substitution):"</span>,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="fu">abs</span>(res_sub<span class="sc">$</span>results<span class="sc">$</span>baseline<span class="sc">$</span>p <span class="sc">-</span> res_sub<span class="sc">$</span>results<span class="sc">$</span>substitution<span class="sc">$</span>p)),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Price difference (baseline vs. substitution): 0 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Tokenised deposits are neutral in this framework.</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Tokenised deposits are neutral in this framework.</code></pre>
+</div>
+</div>
+</section>
+<section id="monetary-policy-response" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="monetary-policy-response"><span class="header-section-number">3.7</span> Monetary policy response</h2>
+<p>Can the central bank offset stablecoin-induced inflation? The paper shows this requires contracting bank credit by <span class="math inline">\(\eta(1-\rho)S\)</span>. We illustrate by finding the <span class="math inline">\(q'\)</span> that restores baseline payment capacity:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>bl_pc <span class="ot">&lt;-</span> res_bt<span class="sc">$</span>results<span class="sc">$</span>baseline<span class="sc">$</span>payment_capacity</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>tr_pc <span class="ot">&lt;-</span> res_bt<span class="sc">$</span>results<span class="sc">$</span>treasury<span class="sc">$</span>payment_capacity</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>G     <span class="ot">&lt;-</span> par<span class="sc">$</span>eta <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> par<span class="sc">$</span>rho) <span class="sc">*</span> par<span class="sc">$</span>S</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Baseline PC:  "</span>, <span class="fu">round</span>(bl_pc, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Baseline PC:   5.5 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Treasury PC:  "</span>, <span class="fu">round</span>(tr_pc, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Treasury PC:   7.3 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Injection G:  "</span>, <span class="fu">round</span>(G, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Injection G:   0.72 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"PC expansion: "</span>, <span class="fu">round</span>(tr_pc <span class="sc">-</span> bl_pc, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PC expansion:  1.8 </code></pre>
+</div>
+</div>
+<p>The central bank would need to tighten by lowering <span class="math inline">\(q\)</span> (raising the interest rate) until <span class="math inline">\(M + q'D' + G = M + qD\)</span>, i.e., <span class="math inline">\(q'D' = qD - G\)</span>. This contraction comes at the cost of a wider bid–ask spread and reduced trading efficiency.</p>
+</section>
+</section>
+<section id="sec-competing" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Competing outside money</h1>
+<section id="setup-1" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="setup-1"><span class="header-section-number">4.1</span> Setup</h2>
+<p>Section 4 of the paper considers the counterfactual of stablecoins as parallel outside money. The canonical parameterisation sets stablecoin money endowments proportional to sovereign money:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"m   = ("</span>, <span class="fu">paste</span>(par<span class="sc">$</span>m, <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")    M   ="</span>, <span class="fu">sum</span>(par<span class="sc">$</span>m), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>m   = ( 0.4, 1.8 )    M   = 2.2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"m_S = ("</span>, <span class="fu">paste</span>(par<span class="sc">$</span>m_S, <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")  M_S ="</span>, <span class="fu">sum</span>(par<span class="sc">$</span>m_S), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>m_S = ( 0.2, 0.9 )  M_S = 1.1 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"m_S / m = ("</span>, <span class="fu">paste</span>(<span class="fu">round</span>(par<span class="sc">$</span>m_S <span class="sc">/</span> par<span class="sc">$</span>m, <span class="dv">2</span>), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>m_S / m = ( 0.5, 0.5 )</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Proportional: m_S = 0.5 * m</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Proportional: m_S = 0.5 * m</code></pre>
+</div>
+</div>
+<p>The proportionality ensures that <span class="math inline">\(m^h_S / m^h = M_S / M\)</span> for all <span class="math inline">\(h\)</span>, which is the condition under which Proposition 4(iii) guarantees that real allocations are independent of the exchange rate <span class="math inline">\(\bar{e}\)</span>.</p>
+</section>
+<section id="exchange-rate-indeterminacy-proposition-4" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="exchange-rate-indeterminacy-proposition-4"><span class="header-section-number">4.2</span> Exchange-rate indeterminacy (Proposition 4)</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>res_comp <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(par, <span class="at">variants =</span> <span class="st">"competing"</span>)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>comp <span class="ot">&lt;-</span> res_comp<span class="sc">$</span>results<span class="sc">$</span>competing</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The indeterminacy table shows how sovereign-unit prices vary with the exchange rate while relative prices and real allocations remain constant:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res_comp, <span class="st">"indeterminacy"</span>, <span class="at">format =</span> <span class="st">"markdown"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>| $\bar e$ | $\bar p_1$ | $\bar p_2$ | $\bar D$ | $\bar D_S$ | $\bar p^S_1$ | $\bar p^S_2$ |
+|---|---|---|---|---|---|---|
+| 0.5000 | 4.0088 | 3.3479 | 5.5000 | 2.7500 | 2.0044 | 1.6740 |
+| 1.0000 | 3.0066 | 2.5109 | 5.5000 | 2.7500 | 3.0066 | 2.5109 |
+| 1.5000 | 2.6725 | 2.2319 | 5.5000 | 2.7500 | 4.0088 | 3.3479 |
+| 2.0000 | 2.5055 | 2.0924 | 5.5000 | 2.7500 | 5.0110 | 4.1849 |
+| 2.5000 | 2.4053 | 2.0087 | 5.5000 | 2.7500 | 6.0132 | 5.0219 |
+| 3.0000 | 2.3385 | 1.9529 | 5.5000 | 2.7500 | 7.0154 | 5.8588 |</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify relative price invariance</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>rel_p <span class="ot">&lt;-</span> comp<span class="sc">$</span>p_grid[, <span class="dv">1</span>] <span class="sc">/</span> comp<span class="sc">$</span>p_grid[, <span class="dv">2</span>]</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Relative prices across exchange rates:</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Relative prices across exchange rates:</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(par<span class="sc">$</span>e_grid)) {</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"  e = %.1f:  p1/p2 = %.6f</span><span class="sc">\n</span><span class="st">"</span>, par<span class="sc">$</span>e_grid[i], rel_p[i]))</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  e = 0.5:  p1/p2 = 1.197402
+  e = 1.0:  p1/p2 = 1.197402
+  e = 1.5:  p1/p2 = 1.197402
+  e = 2.0:  p1/p2 = 1.197402
+  e = 2.5:  p1/p2 = 1.197402
+  e = 3.0:  p1/p2 = 1.197402</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Max deviation:"</span>, <span class="fu">format</span>(<span class="fu">max</span>(<span class="fu">abs</span>(rel_p <span class="sc">-</span> rel_p[<span class="dv">1</span>])), <span class="at">scientific =</span> <span class="cn">TRUE</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Max deviation: 3.952394e-14 </code></pre>
+</div>
+</div>
+<p>The relative price <span class="math inline">\(p_1/p_2\)</span> is constant to machine precision across all exchange rates. This confirms Proposition 4: in the frictionless benchmark with proportional money holdings, the exchange rate is a free parameter that scales nominal prices without affecting real outcomes.</p>
+</section>
+<section id="economic-interpretation" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="economic-interpretation"><span class="header-section-number">4.3</span> Economic interpretation</h2>
+<p>The indeterminacy is not a numeraire artefact—it reflects a genuine economic problem. In the absence of the redemption commitment that pins the stablecoin’s value at par, the exchange rate between two fiat monies has no fundamental anchor. The frictionless case produces a continuum of equilibria; with frictions (conversion costs, counterparty risk), this would manifest as exchange-rate volatility driven by expectations and coordination failures.</p>
+<p>The current settlement hierarchy—in which stablecoins are redeemable claims on sovereign money—prevents this indeterminacy. The redemption commitment fixes the exchange rate by contract, not by equilibrium.</p>
+</section>
+</section>
+<section id="sec-comparative" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Comparative statics on the baseline</h1>
+<section id="the-role-of-monetary-friction-q" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="the-role-of-monetary-friction-q"><span class="header-section-number">5.1</span> The role of monetary friction (<span class="math inline">\(q\)</span>)</h2>
+<p>As <span class="math inline">\(q \to 1\)</span>, the cost of bridging the asynchronicity of exchange vanishes and the economy approaches Walrasian efficiency:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>q_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.3</span>, <span class="fl">0.95</span>, <span class="at">by =</span> <span class="fl">0.05</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>q_family <span class="ot">&lt;-</span> <span class="fu">dgme_vary</span>(par, <span class="at">q =</span> q_grid)</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>q_results <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(q_family<span class="sc">$</span>n), <span class="cf">function</span>(i) {</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> q_family[[i]]</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(p, <span class="at">variants =</span> <span class="st">"baseline"</span>)</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  bl <span class="ot">&lt;-</span> r<span class="sc">$</span>results<span class="sc">$</span>baseline</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">q     =</span> p<span class="sc">$</span>q,</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">r     =</span> (<span class="dv">1</span> <span class="sc">-</span> p<span class="sc">$</span>q) <span class="sc">/</span> p<span class="sc">$</span>q,</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">p1    =</span> bl<span class="sc">$</span>p[<span class="dv">1</span>],</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">p2    =</span> bl<span class="sc">$</span>p[<span class="dv">2</span>],</span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">D     =</span> bl<span class="sc">$</span>D,</span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC    =</span> bl<span class="sc">$</span>payment_capacity,</span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">u1    =</span> bl<span class="sc">$</span>utilities[<span class="dv">1</span>],</span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">u2    =</span> bl<span class="sc">$</span>utilities[<span class="dv">2</span>]</span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>q_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, q_results)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell" data-tbl-cap="Baseline equilibrium across monetary friction levels.">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(q_df, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$q$"</span>, <span class="st">"$r$"</span>, <span class="st">"$p_1$"</span>, <span class="st">"$p_2$"</span>,</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"$D$"</span>, <span class="st">"PC"</span>, <span class="st">"$u^1$"</span>, <span class="st">"$u^2$"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Baseline equilibrium across monetary friction levels.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(q\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(r\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(p_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(p_2\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(D\)</span></th>
+<th style="text-align: right;">PC</th>
+<th style="text-align: right;"><span class="math inline">\(u^1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(u^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">2.333</td>
+<td style="text-align: right;">1.841</td>
+<td style="text-align: right;">1.297</td>
+<td style="text-align: right;">3.143</td>
+<td style="text-align: right;">3.143</td>
+<td style="text-align: right;">2.280</td>
+<td style="text-align: right;">1.422</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">1.857</td>
+<td style="text-align: right;">1.748</td>
+<td style="text-align: right;">1.268</td>
+<td style="text-align: right;">3.385</td>
+<td style="text-align: right;">3.385</td>
+<td style="text-align: right;">2.333</td>
+<td style="text-align: right;">1.495</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">1.500</td>
+<td style="text-align: right;">1.717</td>
+<td style="text-align: right;">1.281</td>
+<td style="text-align: right;">3.667</td>
+<td style="text-align: right;">3.667</td>
+<td style="text-align: right;">2.380</td>
+<td style="text-align: right;">1.544</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">1.222</td>
+<td style="text-align: right;">1.732</td>
+<td style="text-align: right;">1.328</td>
+<td style="text-align: right;">4.000</td>
+<td style="text-align: right;">4.000</td>
+<td style="text-align: right;">2.420</td>
+<td style="text-align: right;">1.577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1.783</td>
+<td style="text-align: right;">1.406</td>
+<td style="text-align: right;">4.400</td>
+<td style="text-align: right;">4.400</td>
+<td style="text-align: right;">2.454</td>
+<td style="text-align: right;">1.598</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.818</td>
+<td style="text-align: right;">1.872</td>
+<td style="text-align: right;">1.519</td>
+<td style="text-align: right;">4.889</td>
+<td style="text-align: right;">4.889</td>
+<td style="text-align: right;">2.483</td>
+<td style="text-align: right;">1.612</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">0.667</td>
+<td style="text-align: right;">2.004</td>
+<td style="text-align: right;">1.674</td>
+<td style="text-align: right;">5.500</td>
+<td style="text-align: right;">5.500</td>
+<td style="text-align: right;">2.509</td>
+<td style="text-align: right;">1.619</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">0.538</td>
+<td style="text-align: right;">2.192</td>
+<td style="text-align: right;">1.884</td>
+<td style="text-align: right;">6.286</td>
+<td style="text-align: right;">6.286</td>
+<td style="text-align: right;">2.530</td>
+<td style="text-align: right;">1.623</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">0.429</td>
+<td style="text-align: right;">2.457</td>
+<td style="text-align: right;">2.174</td>
+<td style="text-align: right;">7.333</td>
+<td style="text-align: right;">7.333</td>
+<td style="text-align: right;">2.548</td>
+<td style="text-align: right;">1.623</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">0.333</td>
+<td style="text-align: right;">2.843</td>
+<td style="text-align: right;">2.588</td>
+<td style="text-align: right;">8.800</td>
+<td style="text-align: right;">8.800</td>
+<td style="text-align: right;">2.564</td>
+<td style="text-align: right;">1.621</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.250</td>
+<td style="text-align: right;">3.436</td>
+<td style="text-align: right;">3.218</td>
+<td style="text-align: right;">11.000</td>
+<td style="text-align: right;">11.000</td>
+<td style="text-align: right;">2.577</td>
+<td style="text-align: right;">1.618</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">4.440</td>
+<td style="text-align: right;">4.277</td>
+<td style="text-align: right;">14.667</td>
+<td style="text-align: right;">14.667</td>
+<td style="text-align: right;">2.588</td>
+<td style="text-align: right;">1.613</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">0.111</td>
+<td style="text-align: right;">6.469</td>
+<td style="text-align: right;">6.404</td>
+<td style="text-align: right;">22.000</td>
+<td style="text-align: right;">22.000</td>
+<td style="text-align: right;">2.597</td>
+<td style="text-align: right;">1.607</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.053</td>
+<td style="text-align: right;">12.587</td>
+<td style="text-align: right;">12.801</td>
+<td style="text-align: right;">44.000</td>
+<td style="text-align: right;">44.000</td>
+<td style="text-align: right;">2.605</td>
+<td style="text-align: right;">1.601</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>As the interest rate falls (higher <span class="math inline">\(q\)</span>), credit expands, utilities rise, and the economy approaches the frictionless allocation. The gains-from-trade condition requires <span class="math inline">\(\gamma(e) &gt; r\)</span>; at very low <span class="math inline">\(q\)</span> (high <span class="math inline">\(r\)</span>), the friction may be too severe for equilibrium to exist.</p>
+</section>
+</section>
+<section id="sec-all" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Solving all variants at once</h1>
+<p>The canonical parameterisation is designed so that all four variants solve out of the box:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>res_all <span class="ot">&lt;-</span> <span class="fu">dgme_solve</span>(par, <span class="at">variants =</span> <span class="st">"all"</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Variants solved:"</span>, <span class="fu">paste</span>(res_all<span class="sc">$</span>variants_solved, <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Variants solved: baseline, substitution, treasury, competing </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (v <span class="cf">in</span> res_all<span class="sc">$</span>variants_solved) {</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> res_all<span class="sc">$</span>results[[v]]</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(r<span class="sc">$</span>check)) {</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(v, <span class="st">": check passed ="</span>, r<span class="sc">$</span>check<span class="sc">$</span>passed, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>    chk <span class="ot">&lt;-</span> <span class="fu">dgme_check</span>(r)</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(v, <span class="st">": check passed ="</span>, chk<span class="sc">$</span>passed, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>baseline : check passed = TRUE 
+substitution : check passed = TRUE 
+treasury : check passed = TRUE 
+competing : check passed = TRUE </code></pre>
+</div>
+</div>
+</section>
+<section id="sec-tables" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Generating publication tables</h1>
+<p>The <code>dgme_table</code> function produces LaTeX-ready tables:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameter table</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res_all, <span class="st">"parameters"</span>,</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">format =</span> <span class="st">"latex"</span>,</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">save =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">path =</span> <span class="st">"tables/"</span>,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">caption =</span> <span class="st">"Canonical parameterisation"</span>,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"tab:params"</span>)</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Baseline vs. Treasury comparison</span></span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res_all, <span class="st">"comparison"</span>,</span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">variants =</span> <span class="fu">c</span>(<span class="st">"baseline"</span>, <span class="st">"treasury"</span>),</span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">format =</span> <span class="st">"latex"</span>,</span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">save =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">path =</span> <span class="st">"tables/"</span>,</span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">caption =</span> <span class="st">"Baseline vs.</span><span class="sc">\\</span><span class="st"> Treasury channel"</span>,</span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"tab:comparison"</span>)</span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Indeterminacy table</span></span>
+<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res_all, <span class="st">"indeterminacy"</span>,</span>
+<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a>           <span class="at">format =</span> <span class="st">"latex"</span>,</span>
+<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a>           <span class="at">save =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a>           <span class="at">path =</span> <span class="st">"tables/"</span>,</span>
+<span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">caption =</span> <span class="st">"Exchange-rate indeterminacy with two outside monies"</span>,</span>
+<span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">"tab:indeterminacy"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="sec-tikz" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Generating TikZ figures</h1>
+<p>The budget-set and nominal-transfer diagrams from the paper can be reproduced directly:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>bl <span class="ot">&lt;-</span> res_all<span class="sc">$</span>results<span class="sc">$</span>baseline</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Budget set in net-trade space (Figure 1 in the paper)</span></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_tikz_na_real</span>(bl, <span class="at">households =</span> <span class="dv">1</span>, <span class="at">write =</span> <span class="cn">TRUE</span>, <span class="at">path =</span> <span class="st">"figures/"</span>)</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Feasibility set in nominal-transfer space (Figure 2 in the paper)</span></span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_tikz_me_nominal</span>(bl, <span class="at">write =</span> <span class="cn">TRUE</span>, <span class="at">path =</span> <span class="st">"figures/"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="session-information" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Session information</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Europe/Vienna
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] dgme_0.0.0.9000 testthat_3.3.2 
+
+loaded via a namespace (and not attached):
+ [1] vctrs_0.7.1       cli_3.6.5         knitr_1.51        rlang_1.1.7      
+ [5] xfun_0.56         otel_0.2.0        purrr_1.2.1       pkgload_1.5.0    
+ [9] jsonlite_2.0.0    glue_1.8.0        rprojroot_2.1.1   htmltools_0.5.9  
+[13] pkgbuild_1.4.8    nleqslv_3.3.5     brio_1.1.5        rmarkdown_2.30   
+[17] evaluate_1.0.5    ellipsis_0.3.2    fastmap_1.2.0     yaml_2.3.12      
+[21] lifecycle_1.0.5   memoise_2.0.1     compiler_4.5.2    fs_1.6.6         
+[25] sessioninfo_1.2.3 htmlwidgets_1.6.4 rstudioapi_0.18.0 digest_0.6.39    
+[29] R6_2.6.1          usethis_3.2.1     magrittr_2.0.4    tools_4.5.2      
+[33] devtools_2.4.6    desc_1.4.3        cachem_1.1.0      remotes_2.5.0    </code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

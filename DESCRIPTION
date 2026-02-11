@@ -1,11 +1,32 @@
 Package: dgme
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Dubey-Geanakoplos Monetary Equilibria for Two-Household Economies
+Version: 0.2.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Martin", "Summer", , "martin.summer@oenb.at", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4401-7416"))
+Description: Compute and visualise low-dimensional examples (2 households, 2
+    goods) of monetary equilibria based on the Dubey-Geanakoplos (1992, 2003,
+    2006) model of a monetary economy with outside and inside money. The package
+    accompanies the paper "Stablecoins and the Monetary Order: Inflationary
+    Finance and Competing Settlement Assets" (Summer, 2026) and implements
+    numerical computation of equilibria for four model variants: baseline,
+    substitution, Treasury channel, and competing outside money.  Includes
+    publication-ready LaTeX tables, TikZ figure generation for budget sets and
+    nominal-transfer diagrams, and comparative-statics tools.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    nleqslv
+Suggests: 
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    quarto
+Config/testthat/edition: 3
+VignetteBuilder: quarto
+URL: https://github.com/Martin-Summer-1090/dgme
+BugReports: https://github.com/Martin-Summer-1090/dgme/issues
