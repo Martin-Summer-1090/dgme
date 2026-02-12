@@ -59,7 +59,8 @@ Defaults to \code{FALSE}.}
 
 \item{show_bank}{Logical.  If \code{TRUE} (default), draw the
 dashed extension of the marketed cone representing the bank's
-counterposition and the aggregate bank vector \eqn{D}.}
+counterposition and the aggregate bank vector \eqn{D}.
+Only effective when \code{length(households) == 2}.}
 }
 \value{
 A list with \code{path} (file path) and \code{tex} (the TikZ

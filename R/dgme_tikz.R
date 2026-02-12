@@ -439,7 +439,21 @@ dgme_tikz_na_real <- function(result,
 
 
 # ===========================================================================
-# ME-NOMINAL: Income-transfer-space figure
+# ME-NOMINAL: Income-transfer-space figure  (revised)
+# ===========================================================================
+#
+# Key changes vs. previous version:
+#   - Font: \scriptsize throughout (was \tiny + mathlabel scale=0.55)
+#   - Marketed cone C(q): gray!70, very thick, extends to y-axis
+#     boundaries via cone_pos / cone_neg (was: to window corners)
+#   - No C(q) label on the ray; feasibility label F^h_p placed inside
+#     each trapezoid instead
+#   - Projection labels: \bar{\nu}_0^{h}, \bar{\nu}_1^{h} with
+#     generic superscript in single-hh mode
+#   - D vector and dashed bank extension only in two-hh (appendix) mode
+#
+# REQUIRES: the revised .compute_me_geometry() which returns
+#   cone_pos, cone_neg, label_pos (replaces cone_end, cone_bank)
 # ===========================================================================
 
 #' @rdname dgme_tikz
@@ -450,13 +464,14 @@ dgme_tikz_na_real <- function(result,
 #' @param show_bank Logical.  If \code{TRUE} (default), draw the
 #'   dashed extension of the marketed cone representing the bank's
 #'   counterposition and the aggregate bank vector \eqn{D}.
+#'   Only effective when \code{length(households) == 2}.
 #'
 #' @export
 dgme_tikz_me_nominal <- function(result,
-                                  households   = c(1, 2),
-                                  geom         = NULL,
-                                  out_dir      = "~/Projects/Research_Projects/Money_and_Inflation_Theory/shared/figures",
-                                  file_name    = NULL,
+                                  households     = c(1, 2),
+                                  geom           = NULL,
+                                  out_dir        = "~/Projects/Research_Projects/Money_and_Inflation_Theory/shared/figures",
+                                  file_name      = NULL,
                                   show_dual_cone = FALSE,
                                   show_bank      = TRUE,
                                   write          = TRUE) {
@@ -482,10 +497,18 @@ dgme_tikz_me_nominal <- function(result,
 
   n6 <- .n6
 
-  # Household mapping
+  single_hh <- (length(households) == 1)
+
+  # Household display mapping
+  # Single-hh: generic superscript "h" (paper main text)
+  # Two-hh:    superscripts "1" and "2" (appendix)
   hh_map <- list(
-    list(sup = "1", col_line = "blue!75!black", col_fill = "blue!60"),
-    list(sup = "2", col_line = "red!80!black",  col_fill = "red!60")
+    list(sup       = if (single_hh) "h" else "1",
+         col_line  = "blue!75!black",
+         col_fill  = "blue!75!black!60"),
+    list(sup       = if (single_hh) "h" else "2",
+         col_line  = "red!80!black",
+         col_fill  = "red!80!black!60")
   )
 
   # ===== Build TikZ =====
@@ -496,146 +519,171 @@ dgme_tikz_me_nominal <- function(result,
   w  <- me$window
   sc <- me$scale
 
+  # --- Preamble ---
   a("\\documentclass[tikz,10pt]{standalone}")
-  a("\\usepackage{lmodern}")
   a("\\usepackage{amsmath,amssymb}")
   a("\\usetikzlibrary{arrows.meta}")
   a("\\begin{document}")
   a("")
+
+  # --- tikzpicture environment ---
   a("\\begin{tikzpicture}[")
-  a(sprintf("  >=Latex, line cap=round, line join=round,"))
+  a("  >=Latex, line cap=round, line join=round,")
   a(sprintf("  x=%scm, y=%scm,", n6(sc$Unit), n6(sc$Unit)))
-  a("  every node/.style={font=\\tiny},")
-  a("  mathlabel/.style={")
-  a("    execute at begin node=$,")
-  a("    execute at end node=$,")
-  a("    scale=0.55")
-  a("  }")
+  a("  every node/.style={font=\\scriptsize}")
   a("]")
   a("")
 
-  # --- Axes ---
-  a("  % axes")
+  # ===== Axes =====
+  a("  % === Axes ===")
   a(sprintf("  \\draw[<-] (%s,0) -- (0,0);", n6(w$Xmin)))
   a(sprintf("  \\draw[->] (0,0) -- (%s,0);", n6(w$Xmax)))
   a(sprintf("  \\draw[<-] (0,%s) -- (0,0);", n6(w$Ymin)))
   a(sprintf("  \\draw[->] (0,0) -- (0,%s);", n6(w$Ymax)))
   a("")
-  a("  % axis labels")
-  a(sprintf("  \\node[below, mathlabel] at (%s,0) {\\nu_0^-};", n6(w$Xmin)))
-  a(sprintf("  \\node[below, mathlabel] at (%s,0) {\\nu_0^+};", n6(w$Xmax)))
-  a(sprintf("  \\node[right, mathlabel] at (0,%s) {\\nu_1^+};", n6(w$Ymax)))
-  a(sprintf("  \\node[right, mathlabel] at (0,%s) {\\nu_1^-};", n6(w$Ymin)))
+  a("  % Axis labels")
+  a(sprintf("  \\node[below, font=\\scriptsize] at (%s,0) {$\\nu_0^-$};", n6(w$Xmin)))
+  a(sprintf("  \\node[below, font=\\scriptsize] at (%s,0) {$\\nu_0^+$};", n6(w$Xmax)))
+  a(sprintf("  \\node[right, font=\\scriptsize] at (0,%s) {$\\nu_1^+$};", n6(w$Ymax)))
+  a(sprintf("  \\node[right, font=\\scriptsize] at (0,%s) {$\\nu_1^-$};", n6(w$Ymin)))
   a("")
 
   a(sprintf("  \\pgfmathsetmacro{\\q}{%s}", n6(q)))
+  a("")
 
-  # --- Feasible trapezoids ---
+  # ===== Feasible trapezoid(s) =====
   for (h in households) {
     hm <- hh_map[[h]]
     tr <- me$trapezoids[[h]]
-    a(sprintf("  %% feasible trapezoid for h=%d", h))
+    a(sprintf("  %% === Feasibility trapezoid (h=%d) ===", h))
     a(sprintf("  \\path[fill=%s, fill opacity=0.15, draw=%s, line width=0.6pt]",
               hm$col_fill, hm$col_line))
     a(sprintf("    (%s,%s) --", n6(tr$top_left[1]),  n6(tr$top_left[2])))
     a(sprintf("    (%s,%s) --", n6(tr$top_right[1]), n6(tr$top_right[2])))
     a(sprintf("    (%s,%s) --", n6(tr$bot_right[1]), n6(tr$bot_right[2])))
     a(sprintf("    (%s,%s) -- cycle;", n6(tr$bot_left[1]), n6(tr$bot_left[2])))
+    a("  ")
+    a("  % Diagonal edge from origin to lower-right (banking constraint boundary)")
     a(sprintf("  \\draw[thin, %s] (0,0) -- (%s,%s);",
               hm$col_line, n6(tr$bot_right[1]), n6(tr$bot_right[2])))
   }
+  a("")
 
-  # --- Dual cone C(q)* ---
+  # ===== Banking technology ray (slope -1/q) =====
+  cp <- me$cone_pos
+  cn <- me$cone_neg
+  a("  % === Banking technology ray (slope -1/q) ===")
+  a(sprintf("  \\draw[very thick, gray!70] (0,0) -- (%s,%s);",
+            n6(cp[1]), n6(cp[2])))
+  a(sprintf("  \\draw[very thick, dashed, gray!70] (0,0) -- (%s,%s);",
+            n6(cn[1]), n6(cn[2])))
+  a("")
+
+  # ===== Dual cone C(q)* (optional) =====
   if (show_dual_cone) {
     dcl <- me$dual_cone_len
-    a("  % Normal (dual) cone C(q)^*")
-    a(sprintf("  \\path[fill=orange!80, fill opacity=0.10, draw=none]"))
+    a("  % === Normal (dual) cone C(q)^* ===")
+    a("  \\path[fill=orange!80, fill opacity=0.10, draw=none]")
     a(sprintf("    (0,0) -- (0,%s) -- (%s,%s) -- cycle;",
               n6(dcl), n6(dcl), n6(q * dcl)))
     a(sprintf("  \\draw[very thick, orange!85!black]"))
     a(sprintf("    (0,0) -- (%s,%s)", n6(dcl), n6(q * dcl)))
-    a(sprintf("    node[pos=.95, right, mathlabel, yshift = 4pt] {\\pi_1=\\bar q};"))
+    a(sprintf("    node[pos=.95, right, font=\\scriptsize, yshift=4pt] {$\\pi_1=\\bar q$};"))
     a(sprintf("  \\draw[very thick, orange!60!black]"))
     a(sprintf("    (0,0) -- (0,%s);", n6(dcl)))
-    a(sprintf("  \\node[orange!85!black, mathlabel, yshift=10pt, xshift=10pt]"))
+    a(sprintf("  \\node[orange!85!black, font=\\scriptsize, yshift=10pt, xshift=10pt]"))
     a(sprintf("    at (%s,%s)", n6(0.33 * dcl), n6(0.42 * dcl)))
-    a(sprintf("    {\\mathcal{C}(\\bar q)^{*}};"))
+    a("    {$\\mathcal{C}(\\bar q)^{*}$};")
+    a("")
   }
 
-  # --- Marketed cone C(q) and bank ---
-  ce <- me$cone_end; cb <- me$cone_bank
-  a("  % marketed cone C(q)")
-  a(sprintf("  \\draw[very thick] (0,0) -- (%s,%s)", n6(w$Xmax), n6(w$Ymin)))
-  a(sprintf("    node[pos=.95, below left, mathlabel] {\\mathcal{C}(\\bar q)};"))
-  if (show_bank) {
-    a(sprintf("  \\draw[very thick, dashed] (0,0) -- (%s,%s);", n6(w$Xmin), n6(-w$Ymin)))
-  }
-
-  # --- Bond vectors ---
+  # ===== Bond vector(s) =====
   for (h in households) {
     hm <- hh_map[[h]]
     bp <- me$bond_pts[[h]]
+    a(sprintf("  %% === Bond vector b^{%s} ===", hm$sup))
     a(sprintf("  \\draw[->, thick, %s] (0,0) -- (%s,%s);",
               hm$col_line, n6(bp[1]), n6(bp[2])))
-    a(sprintf("  \\node[below left=1pt, text=%s, mathlabel] at (%s,%s) {b^{%s}};",
+    a(sprintf("  \\node[below left=1pt, text=%s, font=\\scriptsize] at (%s,%s) {$b^{%s}$};",
               hm$col_line, n6(bp[1]), n6(bp[2]), hm$sup))
     a("")
-    # Projections
+
+    # --- Projections from b^h to axes ---
+    a(sprintf("  %% === Projections from b^{%s} to axes ===", hm$sup))
     a(sprintf("  \\draw[densely dashed, %s] (%s,%s) -- (%s,0);",
               hm$col_line, n6(bp[1]), n6(bp[2]), n6(bp[1])))
     a(sprintf("  \\fill[%s] (%s,0) circle (1.1pt);",
               hm$col_line, n6(bp[1])))
-    a(sprintf("  \\node[above, text=%s, mathlabel] at (%s,0) {\\bar{\\nu}_{0}^{+%s}};",
+    a(sprintf("  \\node[above, text=%s, font=\\scriptsize] at (%s,0) {$\\bar{\\nu}_0^{%s}$};",
               hm$col_line, n6(bp[1]), hm$sup))
     a("")
     a(sprintf("  \\draw[densely dashed, %s] (%s,%s) -- (0,%s);",
               hm$col_line, n6(bp[1]), n6(bp[2]), n6(bp[2])))
-    a(sprintf("  \\fill[%s] (0,%s) circle (1.1pt)",
+    a(sprintf("  \\fill[%s] (0,%s) circle (1.1pt);",
               hm$col_line, n6(bp[2])))
-    a(sprintf("    node[left, text=%s, mathlabel, xshift=3pt] {\\bar{\\nu}_{1}^{-%s}};",
-              hm$col_line, hm$sup))
+    a(sprintf("  \\node[left, text=%s, font=\\scriptsize, xshift=3pt] at (0,%s) {$\\bar{\\nu}_1^{%s}$};",
+              hm$col_line, n6(bp[2]), hm$sup))
+    a("")
   }
 
-  # --- Bank counterposition ---
-  if (show_bank) {
-    ba <- me$bond_agg
-    bank_scale <- 0.6
-    a("  % bank counterposition")
-    a(sprintf("  \\draw[->, very thick, black] (0,0) -- (%s,%s)",
-              n6(-ba[1] * bank_scale), n6(-ba[2] * bank_scale)))
-    a(sprintf("    node[pos=.88, above, mathlabel] {D};"))
-  }
-
-  # --- Markers: -m and -p.e ---
+  # ===== Reference markers: -m^h and -p·e^h =====
   for (h in households) {
     hm <- hh_map[[h]]
     tr <- me$trapezoids[[h]]
-    a(sprintf("  \\fill[%s]  (%s,0) circle (1.2pt)", hm$col_line, n6(-m[h])))
-    a(sprintf("      node[above, text=%s, mathlabel] {-m^{%s}};", hm$col_line, hm$sup))
-    a(sprintf("  \\fill[%s]  (0,%s) circle (1.2pt)", hm$col_line, n6(-tr$pe)))
-    a(sprintf("      node[below, text=%s, mathlabel, xshift=10pt] {-\\bar p\\cdot e^{%s}};",
-              hm$col_line, hm$sup))
+    a(sprintf("  %% === Reference markers (h=%d) ===", h))
+    a(sprintf("  \\fill[%s] (%s,0) circle (1.2pt);", hm$col_line, n6(-m[h])))
+    a(sprintf("  \\node[above right, text=%s, font=\\scriptsize, xshift=-9.5pt, yshift=-2pt] at (%s,0) {$-m^{%s}$};",
+              hm$col_line, n6(-m[h]), hm$sup))
+    a("")
+    a(sprintf("  \\fill[%s] (0,%s) circle (1.2pt);", hm$col_line, n6(-tr$pe)))
+    a(sprintf("  \\node[below left, text=%s, font=\\scriptsize] at (0,%s) {$-p \\cdot e^{%s}$};",
+              hm$col_line, n6(-tr$pe), hm$sup))
+    a("")
   }
 
-  # --- Banking technology vector ---
-  a("  % banking technology B = (-q, 1): borrow q at t=0, repay 1 at t=1")
-  a(sprintf("  \\draw[->, thick] (0,0) -- (-\\q, 1);"))
-  a(sprintf("  \\draw[densely dashed] (-\\q,0) -- (-\\q,1) -- (0,1);"))
-  a(sprintf("  \\fill (-\\q,0) circle (1.2pt) node[below, mathlabel] {-\\bar q};"))
-  a(sprintf("  \\fill (0,1)   circle (1.2pt) node[right, mathlabel] {1};"))
+  # ===== Bank counterposition D (appendix only) =====
+  if (show_bank && !single_hh) {
+    ba <- me$bond_agg
+    bank_scale <- 0.6
+    a("  % === Bank counterposition D ===")
+    a(sprintf("  \\draw[->, very thick, black] (0,0) -- (%s,%s)",
+              n6(-ba[1] * bank_scale), n6(-ba[2] * bank_scale)))
+    a("    node[pos=.88, above, font=\\scriptsize] {$D$};")
+    a("")
+  }
+
+  # ===== Slope calibration box =====
+  a("  % === Slope calibration box ===")
+  a("  \\draw[->, thick] (0,0) -- (-\\q, 1);")
+  a("  \\draw[densely dashed] (-\\q,0) -- (-\\q,1) -- (0,1);")
+  a("  \\fill (-\\q,0) circle (1.2pt) node[below, font=\\scriptsize, xshift=-4pt] {$-q$};")
+  a("  \\fill (0,1) circle (1.2pt) node[above right, font=\\scriptsize, yshift=-2pt] {$1$};")
   a("")
 
-  # --- Optimal consumption dots ---
-  a("  % optimal consumption dots")
+  # ===== Optimal goods point (filled dot on top) =====
+  a("  % === Optimal goods point ===")
   for (h in households) {
     hm <- hh_map[[h]]
     bp <- me$bond_pts[[h]]
-    a(sprintf("  \\fill[draw=white, line width=.4pt, fill=%s]", hm$col_line))
+    a(sprintf("  \\fill[draw=white, line width=0.4pt, fill=%s]",
+              hm$col_line))
     a(sprintf("    (%s,%s) circle (1.9pt);", n6(bp[1]), n6(bp[2])))
   }
+  a("")
+
+  # ===== Feasibility region label =====
+  for (h in households) {
+    hm <- hh_map[[h]]
+    lp <- me$label_pos[[h]]
+    a("  % === Feasibility region label ===")
+    a(sprintf("  \\node[font=\\scriptsize, text=%s] at (%s,%s) {$\\mathcal{F}^{%s}_p(m^{%s}, q)$};",
+              hm$col_line, n6(lp[1]), n6(lp[2]), hm$sup, hm$sup))
+  }
+  a("")
 
   a("\\end{tikzpicture}")
   a("\\end{document}")
+  a("")
 
   tex_str <- paste(tex, collapse = "\n")
 
