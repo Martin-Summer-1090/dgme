@@ -1,27 +1,20 @@
-#' Generate Tables for DG Monetary Equilibria
+#' Generate publication-ready tables
 #'
-#' Produce publication-quality tables summarising equilibrium quantities:
-#' parameters, allocations, prices, payment capacity, and cross-variant
-#' comparisons.  Output can be LaTeX (ready for \code{\\input{}}),
-#' Markdown, or a \code{data.frame} for further manipulation.
+#' Produces LaTeX, Markdown, or data.frame tables for various model
+#' outputs: equilibrium summaries, cross-variant comparisons,
+#' comparative-statics sweeps, and exchange-rate indeterminacy.
 #'
 #' @param results A \code{dgme_results} or \code{dgme_result} object
-#'   from \code{\link{dgme_solve}}.
-#' @param type Character.  Table type:
-#'   \describe{
-#'     \item{\code{"equilibrium"}}{Full equilibrium for one variant.}
-#'     \item{\code{"parameters"}}{Input parameters.}
-#'     \item{\code{"comparison"}}{Side-by-side across variants.}
-#'     \item{\code{"indeterminacy"}}{Table of \eqn{(\bar e, p, x)} across
-#'       exchange rates (Variant 4 only).}
-#'   }
-#' @param variants Character or \code{NULL}.  Which variants to include.
-#'   Default: all solved variants.
-#' @param digits Integer.  Decimal places.  Default 4.
-#' @param caption Character or \code{NULL}.  LaTeX table caption.
+#'   returned by \code{dgme_solve()}.
+#' @param type Character.  Table type: \code{"equilibrium"},
+#'   \code{"parameters"}, \code{"comparison"}, \code{"indeterminacy"},
+#'   \code{"rho_sweep"}, \code{"S_sweep"}, or \code{"scenarios"}.
+#' @param variants Character vector of variant names to include.
+#' @param digits Integer.  Number of decimal places.
+#' @param caption Character or \code{NULL}.  LaTeX caption.
 #'   Auto-generated if \code{NULL}.
-#' @param label Character or \code{NULL}.  LaTeX label.  Auto-generated
-#'   if \code{NULL}.
+#' @param label Character or \code{NULL}.  LaTeX label.
+#'   Auto-generated if \code{NULL}.
 #' @param format Character.  Output format: \code{"latex"} (default),
 #'   \code{"markdown"}, or \code{"data.frame"}.
 #' @param save Logical.  Write to file?
@@ -29,7 +22,8 @@
 #'   \code{getOption("dgme.tab_dir", "tables/")}.
 #' @param filename Character or \code{NULL}.  File name (without extension).
 #'   Auto-generated if \code{NULL}.
-#' @param ... Additional arguments (currently unused).
+#' @param ... Additional arguments passed to sweep-table builders
+#'   (e.g. \code{rho_grid}, \code{S_grid}, \code{scenarios}).
 #'
 #' @return A character string (LaTeX or Markdown), or a \code{data.frame}.
 #'   When \code{save = TRUE}, also writes to file and returns invisibly.
@@ -42,7 +36,8 @@
 #' dgme_table(res, "parameters")
 dgme_table <- function(results,
                        type = c("equilibrium", "parameters",
-                                "comparison", "indeterminacy"),
+                                "comparison", "indeterminacy",
+                                "rho_sweep", "S_sweep", "scenarios"),
                        variants = NULL,
                        digits = 4,
                        caption = NULL,
@@ -83,7 +78,10 @@ dgme_table <- function(results,
     parameters    = .table_parameters(params, digits),
     equilibrium   = .table_equilibrium(res_list[[variants[1]]], digits),
     comparison    = .table_comparison(res_list, variants, digits),
-    indeterminacy = .table_indeterminacy(res_list, variants, digits)
+    indeterminacy = .table_indeterminacy(res_list, variants, digits),
+    rho_sweep     = .table_rho_sweep(params, digits, ...),
+    S_sweep       = .table_S_sweep(params, digits, ...),
+    scenarios     = .table_scenarios(params, digits, ...)
   )
 
   if (format == "data.frame") {
@@ -97,12 +95,67 @@ dgme_table <- function(results,
       equilibrium   = paste0("Equilibrium (", variants[1], "): ", params$label),
       comparison    = paste0("Comparison: ", paste(variants, collapse = " vs.\\ "),
                              " --- ", params$label),
-      indeterminacy = paste0("Exchange-rate indeterminacy: ", params$label)
+      indeterminacy = paste0("Exchange-rate indeterminacy with two outside monies. ",
+                             "Sovereign prices $\\bar p$ vary with the exchange rate ",
+                             "$\\bar{e}$; stablecoin prices $\\bar p^S = \\bar{e} ",
+                             "\\cdot \\bar p$ adjust inversely. Relative prices and ",
+                             "real allocations are constant across rows."),
+      rho_sweep     = paste0("Effect of reserve composition ($\\rho$) on equilibrium ",
+                             "prices. Each row varies the share of reserves held as ",
+                             "settlement media ($\\rho$), with stablecoin issuance ",
+                             "$S = ", formatC(params$S, format = "f", digits = 0),
+                             "$ and fiscal pass-through $\\eta = ",
+                             formatC(params$eta, format = "f", digits = 2),
+                             "$. $G$: Treasury spending financed by stablecoin reserves. ",
+                             "$\\bar p_1, \\bar p_2$: baseline commodity prices ",
+                             "(no Treasury channel). ",
+                             "$\\bar p^T_1, \\bar p^T_2$: commodity prices under the ",
+                             "Treasury channel. ",
+                             "$\\Delta p_1, \\Delta p_2$: percentage price increases ",
+                             "due to the Treasury channel. ",
+                             "PC, PC$^T$: aggregate payment capacity in the baseline ",
+                             "and Treasury-channel equilibria, respectively."),
+      S_sweep       = paste0("Effect of aggregate stablecoin issuance ($S$) on ",
+                             "equilibrium prices. Each row varies the size of the ",
+                             "stablecoin sector, with reserve composition $\\rho = ",
+                             formatC(params$rho, format = "f", digits = 2),
+                             "$ (",
+                             round(100 * (1 - params$rho)),
+                             "\\% of reserves invested in credit claims) and fiscal ",
+                             "pass-through $\\eta = ",
+                             formatC(params$eta, format = "f", digits = 2),
+                             "$. $G$: Treasury spending financed by stablecoin ",
+                             "reserves. $\\Delta p_1, \\Delta p_2$: percentage ",
+                             "increases in commodity prices relative to the baseline ",
+                             "(no Treasury channel). PC$^T$: aggregate payment ",
+                             "capacity under the Treasury channel (baseline ",
+                             "PC $= 5.5$ throughout)."),
+      scenarios     = paste0("Calibrated stablecoin scenarios. Each row represents a ",
+                             "stylised issuer profile defined by three parameters: ",
+                             "the share of reserves held as settlement media ($\\rho$), ",
+                             "the fiscal pass-through rate ($\\eta$), and aggregate ",
+                             "stablecoin issuance ($S$). $G$: Treasury spending ",
+                             "financed by stablecoin reserves. $\\Delta p_1, ",
+                             "\\Delta p_2$: percentage increases in commodity prices ",
+                             "relative to the baseline. PC$^T$: aggregate payment ",
+                             "capacity under the Treasury channel. ",
+                             "Baseline payment capacity is $M + q\\bar D = 5.50$ ",
+                             "throughout. The ``fully sterilised'' scenario ($\\rho = 1$) ",
+                             "keeps all reserves as settlement media; the ``full ",
+                             "Ricardian'' scenario ($\\eta = 0$) assumes complete ",
+                             "offset of issuer-financed sovereign borrowing. Both ",
+                             "are neutral benchmarks.")
     )
   }
   if (is.null(label)) {
-    label <- paste0("tab:", type, "_",
-                    gsub("[^A-Za-z0-9]", "_", params$label))
+    label <- switch(type,
+      rho_sweep     = "tab:rho_sweep",
+      S_sweep       = "tab:S_sweep",
+      scenarios     = "tab:scenarios",
+      indeterminacy = "tab:indeterminacy",
+      paste0("tab:", type, "_",
+             gsub("[^A-Za-z0-9]", "_", params$label))
+    )
   }
 
   # Format output
@@ -117,8 +170,14 @@ dgme_table <- function(results,
     if (is.null(path)) path <- getOption("dgme.tab_dir", "tables/")
     dir.create(path, recursive = TRUE, showWarnings = FALSE)
     if (is.null(filename)) {
-      filename <- paste0(type, "_",
-                         gsub("[^A-Za-z0-9_.-]", "_", params$label))
+      filename <- switch(type,
+        rho_sweep = "rho_sweep",
+        S_sweep   = "S_sweep",
+        scenarios = "scenarios",
+        indeterminacy = "indeterminacy",
+        paste0(type, "_",
+               gsub("[^A-Za-z0-9_.-]", "_", params$label))
+      )
     }
     ext <- if (format == "latex") ".tex" else ".md"
     out_path <- file.path(path, paste0(filename, ext))
@@ -157,37 +216,32 @@ print.dgme_table_output <- function(x, ...) {
     c("$e^2$ (endowment h2)",     paste0("(", paste(formatC(e[2, ], digits = digits, format = "f"), collapse = ", "), ")")),
     c("$\\alpha^1$ (CD exp. h1)", formatC(params$alpha[1], digits = digits, format = "f")),
     c("$\\alpha^2$ (CD exp. h2)", formatC(params$alpha[2], digits = digits, format = "f")),
-    c("$m^1$ (money h1)",         formatC(params$m[1], digits = digits, format = "f")),
-    c("$m^2$ (money h2)",         formatC(params$m[2], digits = digits, format = "f")),
-    c("$M$ (total money)",        formatC(sum(params$m), digits = digits, format = "f"))
+    c("$m^1$",                     formatC(params$m[1], digits = digits, format = "f")),
+    c("$m^2$",                     formatC(params$m[2], digits = digits, format = "f")),
+    c("$M$",                       formatC(sum(params$m), digits = digits, format = "f"))
   )
 
-  # Variant 2 parameters
   if (!is.null(params$rho)) {
-    G <- params$eta * (1 - params$rho) * params$S
     rows <- c(rows, list(
-      c("$\\rho$ (reserve ratio)",       formatC(params$rho, digits = digits, format = "f")),
-      c("$\\eta$ (pass-through)",        formatC(params$eta, digits = digits, format = "f")),
-      c("$S$ (token issuance)",          formatC(params$S, digits = digits, format = "f")),
-      c("$G = \\eta(1-\\rho)S$",         formatC(G, digits = digits, format = "f"))
+      c("$\\rho$ (reserve comp.)", formatC(params$rho, digits = digits, format = "f")),
+      c("$\\eta$ (fiscal pass-through)", formatC(params$eta, digits = digits, format = "f")),
+      c("$S$ (issuance)",          formatC(params$S, digits = digits, format = "f"))
     ))
   }
 
-  # Variant 4 parameters
   if (!is.null(params$m_S)) {
     rows <- c(rows, list(
-      c("$m^1_S$ (stablecoin h1)", formatC(params$m_S[1], digits = digits, format = "f")),
-      c("$m^2_S$ (stablecoin h2)", formatC(params$m_S[2], digits = digits, format = "f")),
-      c("$M_S$ (total stablecoin)", formatC(sum(params$m_S), digits = digits, format = "f"))
+      c("$m^1_S$ (stablecoin money h1)", formatC(params$m_S[1], digits = digits, format = "f")),
+      c("$m^2_S$ (stablecoin money h2)", formatC(params$m_S[2], digits = digits, format = "f")),
+      c("$M_S$ (stablecoin aggregate)",  formatC(sum(params$m_S), digits = digits, format = "f"))
     ))
   }
 
-  df <- data.frame(
+  data.frame(
     Parameter = sapply(rows, `[`, 1),
     Value     = sapply(rows, `[`, 2),
     stringsAsFactors = FALSE
   )
-  df
 }
 
 
@@ -293,26 +347,188 @@ print.dgme_table_output <- function(x, ...) {
     stop("Competing variant has no exchange-rate grid results.")
   }
 
-  fmt <- function(v) formatC(v, digits = digits, format = "f")
+  fmt  <- function(v) formatC(v, digits = digits, format = "f")
+  fmt3 <- function(v) formatC(v, digits = 3, format = "f")
+
+  # Compute M_tilde = M + M_S / e_bar for each grid point
+  params <- r$params
+  M   <- sum(params$m)
+  M_S <- sum(params$m_S)
+
+  # Real allocations are invariant (Prop 4(iii)) — use the reference x
+  x_ref <- r$x
 
   n <- length(r$e_grid)
-  df <- data.frame(
-    e_bar = fmt(r$e_grid),
-    p1    = fmt(r$p_grid[, 1]),
-    p2    = fmt(r$p_grid[, 2]),
-    D     = fmt(r$D_grid),
-    D_S   = fmt(r$D_S_grid),
-    stringsAsFactors = FALSE
-  )
 
-  # Add stablecoin prices p_S = e_bar * p
-  df$p1_S <- fmt(r$e_grid * r$p_grid[, 1])
-  df$p2_S <- fmt(r$e_grid * r$p_grid[, 2])
+  # Build data frame without row names
+  rows <- lapply(seq_len(n), function(i) {
+    ebar    <- r$e_grid[i]
+    M_tilde <- M + M_S / ebar
+    data.frame(
+      ebar    = fmt(ebar),
+      M_tilde = fmt3(M_tilde),
+      p1      = fmt3(r$p_grid[i, 1]),
+      p2      = fmt3(r$p_grid[i, 2]),
+      p1_S    = fmt3(ebar * r$p_grid[i, 1]),
+      p2_S    = fmt3(ebar * r$p_grid[i, 2]),
+      p2_p1   = fmt3(r$p_grid[i, 2] / r$p_grid[i, 1]),
+      x1_1    = fmt(x_ref[1, 1]),
+      x1_2    = fmt(x_ref[1, 2]),
+      x2_1    = fmt(x_ref[2, 1]),
+      x2_2    = fmt(x_ref[2, 2]),
+      stringsAsFactors = FALSE
+    )
+  })
+  df <- do.call(rbind, rows)
+  rownames(df) <- NULL
 
-  # Column names for LaTeX
-  names(df) <- c("$\\bar e$", "$\\bar p_1$", "$\\bar p_2$",
-                  "$\\bar D$", "$\\bar D_S$",
-                  "$\\bar p^S_1$", "$\\bar p^S_2$")
+  names(df) <- c("$\\bar e$", "$\\tilde{M}$",
+                  "$\\bar p_1$", "$\\bar p_2$",
+                  "$\\bar p^S_1$", "$\\bar p^S_2$",
+                  "$\\bar p_2/\\bar p_1$",
+                  "$\\bar x^1_1$", "$\\bar x^1_2$",
+                  "$\\bar x^2_1$", "$\\bar x^2_2$")
+  df
+}
+
+
+# =============================================================================
+# Sweep table builders (new)
+# =============================================================================
+
+#' @keywords internal
+.table_rho_sweep <- function(params, digits, ...) {
+  dots <- list(...)
+  rho_grid <- if (!is.null(dots$rho_grid)) dots$rho_grid else c(0, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0)
+
+  fmt  <- function(v) formatC(v, digits = 2, format = "f")
+  fmt1 <- function(v) formatC(v, digits = 1, format = "f")
+
+  rows <- lapply(rho_grid, function(rho_val) {
+    p_i <- dgme_parametrize(params$label, rho = rho_val,
+                            eta = params$eta, S = params$S,
+                            e = params$e, alpha = params$alpha,
+                            m = params$m, q = params$q,
+                            m_S = params$m_S)
+    r_i <- dgme_solve(p_i, variants = c("baseline", "treasury"))
+    bl  <- r_i$results$baseline
+    tr  <- r_i$results$treasury
+    G   <- p_i$eta * (1 - rho_val) * p_i$S
+
+    data.frame(
+      rho    = fmt(rho_val),
+      G      = fmt(G),
+      p1     = fmt(bl$p[1]),
+      p2     = fmt(bl$p[2]),
+      p1T    = fmt(tr$p[1]),
+      p2T    = fmt(tr$p[2]),
+      dp1    = fmt(100 * (tr$p[1] / bl$p[1] - 1)),
+      dp2    = fmt(100 * (tr$p[2] / bl$p[2] - 1)),
+      PC     = fmt1(bl$payment_capacity),
+      PCT    = fmt1(tr$payment_capacity),
+      stringsAsFactors = FALSE
+    )
+  })
+  df <- do.call(rbind, rows)
+  rownames(df) <- NULL
+
+  names(df) <- c("$\\rho$", "$G$",
+                  "$\\bar p_1$", "$\\bar p_2$",
+                  "$\\bar p^T_1$", "$\\bar p^T_2$",
+                  "$\\Delta p_1$ (\\%)", "$\\Delta p_2$ (\\%)",
+                  "PC", "PC$^T$")
+  df
+}
+
+
+#' @keywords internal
+.table_S_sweep <- function(params, digits, ...) {
+  dots <- list(...)
+  S_grid <- if (!is.null(dots$S_grid)) dots$S_grid else c(0, 0.5, 1.0, 2.0, 3.0, 5.0)
+
+  fmt  <- function(v) formatC(v, digits = 2, format = "f")
+  fmt1 <- function(v) formatC(v, digits = 1, format = "f")
+
+  rows <- lapply(S_grid, function(S_val) {
+    p_i <- dgme_parametrize(params$label, rho = params$rho,
+                            eta = params$eta, S = S_val,
+                            e = params$e, alpha = params$alpha,
+                            m = params$m, q = params$q,
+                            m_S = params$m_S)
+    r_i <- dgme_solve(p_i, variants = c("baseline", "treasury"))
+    bl  <- r_i$results$baseline
+    tr  <- r_i$results$treasury
+    G   <- p_i$eta * (1 - p_i$rho) * S_val
+
+    data.frame(
+      S      = fmt1(S_val),
+      G      = fmt(G),
+      dp1    = fmt(100 * (tr$p[1] / bl$p[1] - 1)),
+      dp2    = fmt(100 * (tr$p[2] / bl$p[2] - 1)),
+      PCT    = fmt1(tr$payment_capacity),
+      stringsAsFactors = FALSE
+    )
+  })
+  df <- do.call(rbind, rows)
+  rownames(df) <- NULL
+
+  names(df) <- c("$S$", "$G$",
+                  "$\\Delta p_1$ (\\%)", "$\\Delta p_2$ (\\%)",
+                  "PC$^T$")
+  df
+}
+
+
+#' @keywords internal
+.table_scenarios <- function(params, digits, ...) {
+  dots <- list(...)
+
+  # Default scenarios matching the paper
+  if (!is.null(dots$scenarios)) {
+    scenarios <- dots$scenarios
+  } else {
+    scenarios <- data.frame(
+      label = c("Tether-like", "Circle-like", "Fully sterilised", "Full Ricardian"),
+      rho   = c(0.05,          0.12,          1.00,               0.10),
+      eta   = c(0.80,          0.80,          0.80,               0.00),
+      S     = c(2.00,          1.00,          1.00,               1.00),
+      stringsAsFactors = FALSE
+    )
+  }
+
+  fmt  <- function(v) formatC(v, digits = 2, format = "f")
+  fmt1 <- function(v) formatC(v, digits = 1, format = "f")
+
+  rows <- lapply(seq_len(nrow(scenarios)), function(i) {
+    sc <- scenarios[i, ]
+    p_i <- dgme_parametrize(params$label, rho = sc$rho,
+                            eta = sc$eta, S = sc$S,
+                            e = params$e, alpha = params$alpha,
+                            m = params$m, q = params$q,
+                            m_S = params$m_S)
+    r_i <- dgme_solve(p_i, variants = c("baseline", "treasury"))
+    bl  <- r_i$results$baseline
+    tr  <- r_i$results$treasury
+    G   <- sc$eta * (1 - sc$rho) * sc$S
+
+    data.frame(
+      Scenario = sc$label,
+      rho      = fmt(sc$rho),
+      eta      = fmt1(sc$eta),
+      S        = fmt1(sc$S),
+      G        = fmt(G),
+      dp1      = fmt(100 * (tr$p[1] / bl$p[1] - 1)),
+      dp2      = fmt(100 * (tr$p[2] / bl$p[2] - 1)),
+      PCT      = fmt1(tr$payment_capacity),
+      stringsAsFactors = FALSE
+    )
+  })
+  df <- do.call(rbind, rows)
+  rownames(df) <- NULL
+
+  names(df) <- c("Scenario", "$\\rho$", "$\\eta$", "$S$", "$G$",
+                  "$\\Delta p_1$ (\\%)", "$\\Delta p_2$ (\\%)",
+                  "PC$^T$")
   df
 }
 
@@ -325,6 +541,7 @@ print.dgme_table_output <- function(x, ...) {
 .df_to_latex <- function(df, caption, label, digits) {
 
   nc <- ncol(df)
+  # Determine column alignment: first col left-aligned, rest right-aligned
   col_spec <- paste0("l", paste(rep("r", nc - 1), collapse = ""))
 
   lines <- character()
@@ -341,9 +558,11 @@ print.dgme_table_output <- function(x, ...) {
   a("    ", paste(names(df), collapse = " & "), " \\\\")
   a("    \\midrule")
 
-  # Body
+  # Body — explicitly suppress row names by indexing columns only
   for (i in seq_len(nrow(df))) {
-    row_str <- paste(df[i, ], collapse = " & ")
+    vals <- vapply(seq_len(nc), function(j) as.character(df[i, j]),
+                   character(1))
+    row_str <- paste(vals, collapse = " & ")
     a("    ", row_str, " \\\\")
   }
 
@@ -358,14 +577,18 @@ print.dgme_table_output <- function(x, ...) {
 #' @keywords internal
 .df_to_markdown <- function(df, digits) {
 
+  nc <- ncol(df)
+
   # Header
   header <- paste0("| ", paste(names(df), collapse = " | "), " |")
-  sep    <- paste0("|", paste(rep("---", ncol(df)), collapse = "|"), "|")
+  sep    <- paste0("|", paste(rep("---", nc), collapse = "|"), "|")
 
-  # Body
+  # Body — explicitly suppress row names
   rows <- character(nrow(df))
   for (i in seq_len(nrow(df))) {
-    rows[i] <- paste0("| ", paste(df[i, ], collapse = " | "), " |")
+    vals <- vapply(seq_len(nc), function(j) as.character(df[i, j]),
+                   character(1))
+    rows[i] <- paste0("| ", paste(vals, collapse = " | "), " |")
   }
 
   paste(c(header, sep, rows), collapse = "\n")

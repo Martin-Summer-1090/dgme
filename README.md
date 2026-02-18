@@ -8,8 +8,7 @@ Dubey–Geanakoplos Monetary Equilibria for Two-Household Economies
 economies with Cobb–Douglas preferences, based on the Dubey–Geanakoplos
 (1992, 2003) model.  It accompanies the paper:
 
-> **Stablecoins and the Monetary Order: Inflationary Finance and Competing
-> Settlement Assets**
+> **Stablecoins, Inflation and the Settlement Hierarchy**
 > Martin Summer, Oesterreichische Nationalbank (2026)
 
 The package implements four model variants:
@@ -79,6 +78,51 @@ dgme_parametrize()
                 │
                 └──► dgme_solve() on each economy
 ```
+
+## Publication tables
+
+`dgme_table()` generates publication-ready tables in LaTeX, Markdown, or
+data.frame format.  Seven table types are available:
+
+| Type | Description | Paper table |
+|------|-------------|-------------|
+| `"parameters"` | All exogenous parameters | — |
+| `"equilibrium"` | Full equilibrium summary for one variant | — |
+| `"comparison"` | Side-by-side comparison across variants | — |
+| `"rho_sweep"` | Reserve composition comparative statics | Table 2 |
+| `"S_sweep"` | Aggregate issuance comparative statics | Table 3 |
+| `"scenarios"` | Calibrated issuer profiles | Table 4 |
+| `"indeterminacy"` | Exchange-rate grid with two outside monies | Table 5 |
+
+The sweep tables (`rho_sweep`, `S_sweep`, `scenarios`) solve the model
+internally for each grid point, so a single call produces a complete
+table:
+
+```r
+# Generate all paper tables at once
+par <- dgme_parametrize("paper_example_1")
+res <- dgme_solve(par, variants = c("baseline", "treasury"))
+
+# Table 2: varying reserve composition
+dgme_table(res, "rho_sweep", format = "latex",
+           save = TRUE, path = "tables/")
+
+# Table 3: varying aggregate issuance
+dgme_table(res, "S_sweep", format = "latex",
+           save = TRUE, path = "tables/")
+
+# Table 4: calibrated scenarios
+dgme_table(res, "scenarios", format = "latex",
+           save = TRUE, path = "tables/")
+
+# Table 5: exchange-rate indeterminacy
+res_comp <- dgme_solve(par, variants = "competing")
+dgme_table(res_comp, "indeterminacy", format = "latex",
+           save = TRUE, path = "tables/")
+```
+
+A convenience script that generates all paper tables is provided at
+`inst/paper_scripts/generate_paper_tables.R`.
 
 ## Canonical parameterisation
 

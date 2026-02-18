@@ -2,11 +2,12 @@
 % Please edit documentation in R/dgme_table.R
 \name{dgme_table}
 \alias{dgme_table}
-\title{Generate Tables for DG Monetary Equilibria}
+\title{Generate publication-ready tables}
 \usage{
 dgme_table(
   results,
-  type = c("equilibrium", "parameters", "comparison", "indeterminacy"),
+  type = c("equilibrium", "parameters", "comparison", "indeterminacy", "rho_sweep",
+    "S_sweep", "scenarios"),
   variants = NULL,
   digits = 4,
   caption = NULL,
@@ -20,27 +21,21 @@ dgme_table(
 }
 \arguments{
 \item{results}{A \code{dgme_results} or \code{dgme_result} object
-from \code{\link{dgme_solve}}.}
+returned by \code{dgme_solve()}.}
 
-\item{type}{Character.  Table type:
-\describe{
-\item{\code{"equilibrium"}}{Full equilibrium for one variant.}
-\item{\code{"parameters"}}{Input parameters.}
-\item{\code{"comparison"}}{Side-by-side across variants.}
-\item{\code{"indeterminacy"}}{Table of \eqn{(\bar e, p, x)} across
-exchange rates (Variant 4 only).}
-}}
+\item{type}{Character.  Table type: \code{"equilibrium"},
+\code{"parameters"}, \code{"comparison"}, \code{"indeterminacy"},
+\code{"rho_sweep"}, \code{"S_sweep"}, or \code{"scenarios"}.}
 
-\item{variants}{Character or \code{NULL}.  Which variants to include.
-Default: all solved variants.}
+\item{variants}{Character vector of variant names to include.}
 
-\item{digits}{Integer.  Decimal places.  Default 4.}
+\item{digits}{Integer.  Number of decimal places.}
 
-\item{caption}{Character or \code{NULL}.  LaTeX table caption.
+\item{caption}{Character or \code{NULL}.  LaTeX caption.
 Auto-generated if \code{NULL}.}
 
-\item{label}{Character or \code{NULL}.  LaTeX label.  Auto-generated
-if \code{NULL}.}
+\item{label}{Character or \code{NULL}.  LaTeX label.
+Auto-generated if \code{NULL}.}
 
 \item{format}{Character.  Output format: \code{"latex"} (default),
 \code{"markdown"}, or \code{"data.frame"}.}
@@ -53,17 +48,17 @@ if \code{NULL}.}
 \item{filename}{Character or \code{NULL}.  File name (without extension).
 Auto-generated if \code{NULL}.}
 
-\item{...}{Additional arguments (currently unused).}
+\item{...}{Additional arguments passed to sweep-table builders
+(e.g. \code{rho_grid}, \code{S_grid}, \code{scenarios}).}
 }
 \value{
 A character string (LaTeX or Markdown), or a \code{data.frame}.
 When \code{save = TRUE}, also writes to file and returns invisibly.
 }
 \description{
-Produce publication-quality tables summarising equilibrium quantities:
-parameters, allocations, prices, payment capacity, and cross-variant
-comparisons.  Output can be LaTeX (ready for \code{\\input{}}),
-Markdown, or a \code{data.frame} for further manipulation.
+Produces LaTeX, Markdown, or data.frame tables for various model
+outputs: equilibrium summaries, cross-variant comparisons,
+comparative-statics sweeps, and exchange-rate indeterminacy.
 }
 \examples{
 par <- dgme_parametrize("paper_example_1")

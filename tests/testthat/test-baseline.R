@@ -521,7 +521,7 @@ test_that("dgme_table produces indeterminacy table", {
   df <- dgme_table(res, "indeterminacy", format = "data.frame")
   expect_s3_class(df, "data.frame")
   expect_equal(nrow(df), 4)
-  expect_equal(ncol(df), 7)
+  expect_equal(ncol(df), 11)
 })
 
 test_that("dgme_table parameter table includes variant-specific params", {
