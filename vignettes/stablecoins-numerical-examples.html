@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Martin Summer">
-<meta name="dcterms.date" content="2026-02-11">
+<meta name="dcterms.date" content="2026-03-03">
 
 <title>Stablecoins and the Monetary Order: Numerical Examples</title>
 <style>
@@ -172,7 +172,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 11, 2026</p>
+      <p class="date">March 3, 2026</p>
     </div>
   </div>
   
@@ -900,7 +900,7 @@ Result: 7/7 passed — all checks OK</code></pre>
 <pre><code>Proportional: m_S = 0.5 * m</code></pre>
 </div>
 </div>
-<p>The proportionality ensures that <span class="math inline">\(m^h_S / m^h = M_S / M\)</span> for all <span class="math inline">\(h\)</span>, which is the condition under which Proposition 4(iii) guarantees that real allocations are independent of the exchange rate <span class="math inline">\(\bar{e}\)</span>.</p>
+<p>The proportionality ensures that <span class="math inline">\(m^h_S / m^h = M_S / M\)</span> for all <span class="math inline">\(h\)</span>, which is the condition under which Proposition 4(iii) guarantees that real allocations are independent of the exchange rate <span class="math inline">\(\bar{\varepsilon}\)</span>.</p>
 </section>
 <section id="exchange-rate-indeterminacy-proposition-4" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="exchange-rate-indeterminacy-proposition-4"><span class="header-section-number">4.2</span> Exchange-rate indeterminacy (Proposition 4)</h2>
@@ -912,14 +912,14 @@ Result: 7/7 passed — all checks OK</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dgme_table</span>(res_comp, <span class="st">"indeterminacy"</span>, <span class="at">format =</span> <span class="st">"markdown"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>| $\bar e$ | $\bar p_1$ | $\bar p_2$ | $\bar D$ | $\bar D_S$ | $\bar p^S_1$ | $\bar p^S_2$ |
-|---|---|---|---|---|---|---|
-| 0.5000 | 4.0088 | 3.3479 | 5.5000 | 2.7500 | 2.0044 | 1.6740 |
-| 1.0000 | 3.0066 | 2.5109 | 5.5000 | 2.7500 | 3.0066 | 2.5109 |
-| 1.5000 | 2.6725 | 2.2319 | 5.5000 | 2.7500 | 4.0088 | 3.3479 |
-| 2.0000 | 2.5055 | 2.0924 | 5.5000 | 2.7500 | 5.0110 | 4.1849 |
-| 2.5000 | 2.4053 | 2.0087 | 5.5000 | 2.7500 | 6.0132 | 5.0219 |
-| 3.0000 | 2.3385 | 1.9529 | 5.5000 | 2.7500 | 7.0154 | 5.8588 |</code></pre>
+<pre><code>| $\bar e$ | $\tilde{M}$ | $\bar p_1$ | $\bar p_2$ | $\bar p^S_1$ | $\bar p^S_2$ | $\bar p_2/\bar p_1$ | $\bar x^1_1$ | $\bar x^1_2$ | $\bar x^2_1$ | $\bar x^2_2$ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0.5000 | 4.400 | 4.009 | 3.348 | 2.004 | 1.674 | 0.835 | 1.2097 | 3.0815 | 1.8903 | 0.7185 |
+| 1.0000 | 3.300 | 3.007 | 2.511 | 3.007 | 2.511 | 0.835 | 1.2097 | 3.0815 | 1.8903 | 0.7185 |
+| 1.5000 | 2.933 | 2.673 | 2.232 | 4.009 | 3.348 | 0.835 | 1.2097 | 3.0815 | 1.8903 | 0.7185 |
+| 2.0000 | 2.750 | 2.505 | 2.092 | 5.011 | 4.185 | 0.835 | 1.2097 | 3.0815 | 1.8903 | 0.7185 |
+| 2.5000 | 2.640 | 2.405 | 2.009 | 6.013 | 5.022 | 0.835 | 1.2097 | 3.0815 | 1.8903 | 0.7185 |
+| 3.0000 | 2.567 | 2.338 | 1.953 | 7.015 | 5.859 | 0.835 | 1.2097 | 3.0815 | 1.8903 | 0.7185 |</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -930,15 +930,15 @@ Result: 7/7 passed — all checks OK</code></pre>
 <pre><code>Relative prices across exchange rates:</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(par<span class="sc">$</span>e_grid)) {</span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"  e = %.1f:  p1/p2 = %.6f</span><span class="sc">\n</span><span class="st">"</span>, par<span class="sc">$</span>e_grid[i], rel_p[i]))</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"  ε = %.1f:  p1/p2 = %.6f</span><span class="sc">\n</span><span class="st">"</span>, par<span class="sc">$</span>e_grid[i], rel_p[i]))</span>
 <span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  e = 0.5:  p1/p2 = 1.197402
-  e = 1.0:  p1/p2 = 1.197402
-  e = 1.5:  p1/p2 = 1.197402
-  e = 2.0:  p1/p2 = 1.197402
-  e = 2.5:  p1/p2 = 1.197402
-  e = 3.0:  p1/p2 = 1.197402</code></pre>
+<pre><code>  ε = 0.5:  p1/p2 = 1.197402
+  ε = 1.0:  p1/p2 = 1.197402
+  ε = 1.5:  p1/p2 = 1.197402
+  ε = 2.0:  p1/p2 = 1.197402
+  ε = 2.5:  p1/p2 = 1.197402
+  ε = 3.0:  p1/p2 = 1.197402</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Max deviation:"</span>, <span class="fu">format</span>(<span class="fu">max</span>(<span class="fu">abs</span>(rel_p <span class="sc">-</span> rel_p[<span class="dv">1</span>])), <span class="at">scientific =</span> <span class="cn">TRUE</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1224,7 +1224,7 @@ competing : check passed = TRUE </code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.5.2 (2025-10-31)
 Platform: x86_64-pc-linux-gnu
-Running under: Ubuntu 24.04.3 LTS
+Running under: Ubuntu 24.04.4 LTS
 
 Matrix products: default
 BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -1245,18 +1245,14 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] dgme_0.0.0.9000 testthat_3.3.2 
+[1] dgme_0.2.0
 
 loaded via a namespace (and not attached):
- [1] vctrs_0.7.1       cli_3.6.5         knitr_1.51        rlang_1.1.7      
- [5] xfun_0.56         otel_0.2.0        purrr_1.2.1       pkgload_1.5.0    
- [9] jsonlite_2.0.0    glue_1.8.0        rprojroot_2.1.1   htmltools_0.5.9  
-[13] pkgbuild_1.4.8    nleqslv_3.3.5     brio_1.1.5        rmarkdown_2.30   
-[17] evaluate_1.0.5    ellipsis_0.3.2    fastmap_1.2.0     yaml_2.3.12      
-[21] lifecycle_1.0.5   memoise_2.0.1     compiler_4.5.2    fs_1.6.6         
-[25] sessioninfo_1.2.3 htmlwidgets_1.6.4 rstudioapi_0.18.0 digest_0.6.39    
-[29] R6_2.6.1          usethis_3.2.1     magrittr_2.0.4    tools_4.5.2      
-[33] devtools_2.4.6    desc_1.4.3        cachem_1.1.0      remotes_2.5.0    </code></pre>
+ [1] digest_0.6.39     fastmap_1.2.0     xfun_0.56         knitr_1.51       
+ [5] htmltools_0.5.9   rmarkdown_2.30    cli_3.6.5         nleqslv_3.3.5    
+ [9] compiler_4.5.2    rstudioapi_0.18.0 tools_4.5.2       evaluate_1.0.5   
+[13] yaml_2.3.12       otel_0.2.0        rlang_1.1.7       jsonlite_2.0.0   
+[17] htmlwidgets_1.6.4</code></pre>
 </div>
 </div>
 </section>

@@ -97,7 +97,7 @@ dgme_table <- function(results,
                              " --- ", params$label),
       indeterminacy = paste0("Exchange-rate indeterminacy with two outside monies. ",
                              "Sovereign prices $\\bar p$ vary with the exchange rate ",
-                             "$\\bar{e}$; stablecoin prices $\\bar p^S = \\bar{e} ",
+                             "$\\bar{\\varepsilon}$; stablecoin prices $\\bar p^S = \\bar{\\varepsilon} ",
                              "\\cdot \\bar p$ adjust inversely. Relative prices and ",
                              "real allocations are constant across rows."),
       rho_sweep     = paste0("Effect of reserve composition ($\\rho$) on equilibrium ",
@@ -382,7 +382,7 @@ print.dgme_table_output <- function(x, ...) {
   df <- do.call(rbind, rows)
   rownames(df) <- NULL
 
-  names(df) <- c("$\\bar e$", "$\\tilde{M}$",
+  names(df) <- c("$\\bar{\\varepsilon}$", "$\\tilde{M}$",
                   "$\\bar p_1$", "$\\bar p_2$",
                   "$\\bar p^S_1$", "$\\bar p^S_2$",
                   "$\\bar p_2/\\bar p_1$",

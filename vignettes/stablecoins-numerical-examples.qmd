@@ -339,7 +339,7 @@ cat("Proportional: m_S = 0.5 * m\n")
 
 The proportionality ensures that $m^h_S / m^h = M_S / M$ for all $h$,
 which is the condition under which Proposition 4(iii) guarantees that
-real allocations are independent of the exchange rate $\bar{e}$.
+real allocations are independent of the exchange rate $\bar{\varepsilon}$.
 
 ## Exchange-rate indeterminacy (Proposition 4)
 
@@ -363,7 +363,7 @@ dgme_table(res_comp, "indeterminacy", format = "markdown")
 rel_p <- comp$p_grid[, 1] / comp$p_grid[, 2]
 cat("Relative prices across exchange rates:\n")
 for (i in seq_along(par$e_grid)) {
-  cat(sprintf("  e = %.1f:  p1/p2 = %.6f\n", par$e_grid[i], rel_p[i]))
+  cat(sprintf("  ε = %.1f:  p1/p2 = %.6f\n", par$e_grid[i], rel_p[i]))
 }
 cat("Max deviation:", format(max(abs(rel_p - rel_p[1])), scientific = TRUE), "\n")
 ```
